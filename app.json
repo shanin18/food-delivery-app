@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Food Delivery",
+    "slug": "food-delivery",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "fooddelivery",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
