@@ -66,6 +66,18 @@ const SignupScreen = () => {
             contentFit="cover"
             contentPosition={{ top: 0, left: 0 }}
           >
+            <Pressable
+              style={styles.backButton}
+              onPress={() => router.back()}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+            >
+              <Ionicons
+                name="chevron-back"
+                size={22}
+                color={Colors.imagePlaceholder}
+              />
+            </Pressable>
 
             <Text style={styles.title}>Sign Up</Text>
 
@@ -217,8 +229,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.darkBackground,
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: 118,
+    paddingTop: 80,
     paddingBottom: 50,
+  },
+
+  backButton: {
+    position: "absolute",
+    top: 28,
+    left: 24,
+    width: 44,
+    height: 44,
+    borderRadius: "50%",
+    backgroundColor: Colors.white,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   title: {
@@ -229,7 +253,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  subtitle: { 
+  subtitle: {
     fontFamily: Fonts.regular,
     fontSize: 16,
     lineHeight: 22,
