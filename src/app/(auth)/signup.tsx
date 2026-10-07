@@ -45,10 +45,7 @@ const SignupScreen = () => {
   };
 
   return (
-    <SafeAreaView
-      style={styles.safeArea}
-      edges={["top", "left", "right"]}
-    >
+    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -81,9 +78,7 @@ const SignupScreen = () => {
 
             <Text style={styles.title}>Sign Up</Text>
 
-            <Text style={styles.subtitle}>
-              Please sign up to get started
-            </Text>
+            <Text style={styles.subtitle}>Please sign up to get started</Text>
           </ImageBackground>
 
           <View style={styles.formContainer}>
@@ -135,11 +130,7 @@ const SignupScreen = () => {
                 onPress={() => setShowPassword((prev) => !prev)}
               >
                 <Ionicons
-                  name={
-                    showPassword
-                      ? "eye-outline"
-                      : "eye-off-outline"
-                  }
+                  name={showPassword ? "eye-outline" : "eye-off-outline"}
                   size={21}
                   color={Colors.imagePlaceholder}
                 />
@@ -165,16 +156,10 @@ const SignupScreen = () => {
 
               <Pressable
                 style={styles.passwordToggle}
-                onPress={() =>
-                  setShowConfirmPassword((prev) => !prev)
-                }
+                onPress={() => setShowConfirmPassword((prev) => !prev)}
               >
                 <Ionicons
-                  name={
-                    showConfirmPassword
-                      ? "eye-outline"
-                      : "eye-off-outline"
-                  }
+                  name={showConfirmPassword ? "eye-outline" : "eye-off-outline"}
                   size={21}
                   color={Colors.imagePlaceholder}
                 />
@@ -192,12 +177,19 @@ const SignupScreen = () => {
             </Pressable>
 
             <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>
-                Already have an account?
-              </Text>
+              <Text style={styles.loginText}>Already have an account?</Text>
 
               <Pressable onPress={() => router.replace("/login")}>
-                <Text style={styles.loginLink}>LOG IN</Text>
+                {({ pressed }) => (
+                  <Text
+                    style={[
+                      styles.loginLink,
+                      pressed && styles.loginLinkPressed,
+                    ]}
+                  >
+                    LOG IN
+                  </Text>
+                )}
               </Pressable>
             </View>
           </View>
@@ -359,6 +351,11 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.bold,
     fontSize: 14,
     color: Colors.primary,
+  },
+
+  loginLinkPressed: {
+    textDecorationLine: "underline",
+    opacity: 0.7,
   },
 });
 
