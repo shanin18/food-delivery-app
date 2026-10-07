@@ -68,17 +68,17 @@ const OnboardingScreen = () => {
   };
 
   const handleNext = () => {
-    if (!isLastSlide) {
-      const nextIndex = currentIndex + 1;
-      flatListRef.current?.scrollToIndex({
-        index: nextIndex,
-        animated: true,
-      });
-    } else {
+    if (isLastSlide) {
       router.replace("/login");
+      return;
     }
-  };
 
+    flatListRef.current?.scrollToIndex({
+      index: currentIndex + 1,
+      animated: true,
+    });
+  };
+  
   const handleSkip = () => {
     router.replace("/login");
   };

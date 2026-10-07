@@ -11,7 +11,7 @@ export const Colors = {
 
   background: "#FFFFFF",
   surface: "#F6F6F6",
-  surfaceSecondary: "#ECF0F4",
+  surfaceSecondary: "#F0F5FA",
   darkBackground: "#121223",
 
   text: "#32343E",
@@ -19,7 +19,7 @@ export const Colors = {
   textInverse: "#FFFFFF",
 
   imagePlaceholder: "#98A8B8",
-  border: "#E8EAED",
+  border: "#E3EBF2",
 
   error: "#FF3434",
 

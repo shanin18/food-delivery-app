@@ -9,7 +9,7 @@ const RootLayout = () => {
     return null;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <Stack screenOptions={{ headerShown: false,  }} />;
 };
 
 export default RootLayout;
