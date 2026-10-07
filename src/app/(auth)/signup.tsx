@@ -1,4 +1,8 @@
+import { AuthFeedback } from "@/components/auth-feedback";
 import { Colors, Fonts } from "@/constants/theme";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { normalizeEmail, validatePassword } from "@/lib/auth";
+import { getSupabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
@@ -24,25 +28,28 @@ const SignupScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSignup = () => {
-    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-      console.log("Please fill all fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      console.log("Passwords do not match");
-      return;
-    }
-
-    console.log({
-      name,
-      email,
-      password,
+  const { busy, error, run } = useAuthAction();
+  const handleSignup = () =>
+    run(async () => {
+      if (!name.trim() || name.trim().length > 100)
+        throw new Error("Enter your name (up to 100 characters).");
+      const normalizedEmail = normalizeEmail(email);
+      validatePassword(password, confirmPassword);
+      const { data, error } = await getSupabase().auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: { data: { full_name: name.trim() } },
+      });
+      if (error) throw error;
+      setPassword("");
+      setConfirmPassword("");
+      if (data.session) router.replace("/location-access");
+      else
+        router.push({
+          pathname: "/verification",
+          params: { email: normalizedEmail, type: "signup" },
+        });
     });
-
-    // Firebase/API signup will go here later.
-  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
@@ -82,6 +89,7 @@ const SignupScreen = () => {
           </ImageBackground>
 
           <View style={styles.formContainer}>
+            <AuthFeedback busy={busy} error={error} />
             <Text style={styles.label}>NAME</Text>
 
             <TextInput
@@ -172,6 +180,7 @@ const SignupScreen = () => {
                 pressed && styles.buttonPressed,
               ]}
               onPress={handleSignup}
+              disabled={busy}
             >
               <Text style={styles.buttonText}>SIGN UP</Text>
             </Pressable>

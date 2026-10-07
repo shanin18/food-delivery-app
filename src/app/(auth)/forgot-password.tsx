@@ -1,4 +1,8 @@
 import { Colors, Fonts } from "@/constants/theme";
+import { AuthFeedback } from '@/components/auth-feedback';
+import { useAuthAction } from '@/hooks/use-auth-action';
+import { normalizeEmail } from '@/lib/auth';
+import { getSupabase } from '@/lib/supabase';
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
@@ -18,17 +22,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
 
-  const handleSendCode = () => {
-    if (!email.trim()) {
-      console.log("Email is required");
-      return;
-    }
-
+  const { busy, error, run } = useAuthAction();
+  const handleSendCode = () => run(async () => {
+    const normalizedEmail = normalizeEmail(email);
+    const { error } = await getSupabase().auth.resetPasswordForEmail(normalizedEmail);
+    if (error) throw error;
     router.push({
       pathname: "/verification",
-      params: { email },
+      params: { email: normalizedEmail, type: 'recovery' },
     });
-  };
+  });
 
   return (
     <SafeAreaView
@@ -71,11 +74,12 @@ const ForgotPasswordScreen = () => {
             <Text style={styles.title}>Forgot Password</Text>
 
             <Text style={styles.subtitle}>
-              Please sign in to your existing account
+              Enter your email to reset your password
             </Text>
           </ImageBackground>
 
           <View style={styles.formContainer}>
+            <AuthFeedback busy={busy} error={error} />
             <Text style={styles.label}>EMAIL</Text>
 
             <TextInput
@@ -99,6 +103,7 @@ const ForgotPasswordScreen = () => {
                 pressed && styles.buttonPressed,
               ]}
               onPress={handleSendCode}
+              disabled={busy}
               accessibilityRole="button"
             >
               <Text style={styles.buttonText}>SEND CODE</Text>

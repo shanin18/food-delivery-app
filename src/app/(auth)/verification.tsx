@@ -1,4 +1,8 @@
+import { AuthFeedback } from "@/components/auth-feedback";
 import { Colors, Fonts } from "@/constants/theme";
+import { useAuthAction } from "@/hooks/use-auth-action";
+import { normalizeEmail, OTP_LENGTH } from "@/lib/auth";
+import { getSupabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
@@ -15,13 +19,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const OTP_LENGTH = 4;
-const RESEND_TIME = 50;
+const RESEND_TIME = 60;
 
 const VerificationScreen = () => {
-  const { email } = useLocalSearchParams<{ email?: string }>();
+  const { email, type } = useLocalSearchParams<{
+    email?: string;
+    type?: string;
+  }>();
+  const { busy, error, run } = useAuthAction();
 
-  const [code, setCode] = useState(["", "", "", ""]);
+  const [code, setCode] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [seconds, setSeconds] = useState(RESEND_TIME);
 
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -43,6 +50,12 @@ const VerificationScreen = () => {
 
     const updatedCode = [...code];
 
+    if (number.length > 1) {
+      const digits = number.slice(0, OTP_LENGTH).split("");
+      setCode(Array.from({ length: OTP_LENGTH }, (_, i) => digits[i] ?? ""));
+      inputRefs.current[Math.min(digits.length, OTP_LENGTH - 1)]?.focus();
+      return;
+    }
     updatedCode[index] = number.slice(-1);
 
     setCode(updatedCode);
@@ -58,32 +71,43 @@ const VerificationScreen = () => {
     }
   };
 
-  const handleResend = () => {
-    if (seconds > 0) return;
-
-    console.log("Resend verification code");
-
-    setCode(["", "", "", ""]);
-    setSeconds(RESEND_TIME);
-
-    inputRefs.current[0]?.focus();
-  };
-
-  const handleVerify = () => {
-    const verificationCode = code.join("");
-
-    if (verificationCode.length !== OTP_LENGTH) {
-      console.log("Please enter the complete code");
-      return;
-    }
-
-    console.log({
-      email,
-      verificationCode,
+  const handleResend = () =>
+    run(async () => {
+      if (seconds > 0) return;
+      const address = normalizeEmail(email ?? "");
+      if (type !== "signup" && type !== "recovery")
+        throw new Error("Start again from sign-up or password recovery.");
+      const { error } =
+        type === "recovery"
+          ? await getSupabase().auth.resetPasswordForEmail(address)
+          : await getSupabase().auth.resend({ type: "signup", email: address });
+      if (error) throw error;
+      setCode(Array(OTP_LENGTH).fill(""));
+      setSeconds(RESEND_TIME);
+      inputRefs.current[0]?.focus();
     });
 
-    // Actual verification API/Firebase logic later.
-  };
+  const handleVerify = () =>
+    run(async () => {
+      const verificationCode = code.join("");
+      if (verificationCode.length !== OTP_LENGTH)
+        throw new Error("Enter the complete six-digit code.");
+      if (type !== "signup" && type !== "recovery")
+        throw new Error("Start again from sign-up or password recovery.");
+      const { data, error } = await getSupabase().auth.verifyOtp({
+        email: normalizeEmail(email ?? ""),
+        token: verificationCode,
+        type: type === "recovery" ? "recovery" : "email",
+      });
+      if (error) throw error;
+      if (!data.session)
+        throw new Error(
+          "Verification did not create a session. Please try again.",
+        );
+      router.replace(
+        type === "recovery" ? "/reset-password" : "/location-access",
+      );
+    });
 
   return (
     <SafeAreaView
@@ -124,24 +148,22 @@ const VerificationScreen = () => {
             <Text style={styles.title}>Verification</Text>
 
             <Text style={styles.subtitle}>
-              We have sent a code to your email{"\n"}
-              <Text style={styles.email}>
-                {email || "example@gmail.com"}
-              </Text>
+              If your email is eligible, you will receive a code.{"\n"}
+              <Text style={styles.email}>{email ?? ""}</Text>
             </Text>
           </ImageBackground>
 
           <View style={styles.formContainer}>
+            <AuthFeedback busy={busy} error={error} />
             <View style={styles.codeHeader}>
               <Text style={styles.label}>CODE</Text>
 
               {seconds > 0 ? (
                 <Text style={styles.resendTimer}>
-                  Resend in{" "}
-                  <Text style={styles.seconds}>{seconds}sec</Text>
+                  Resend in <Text style={styles.seconds}>{seconds}sec</Text>
                 </Text>
               ) : (
-                <Pressable onPress={handleResend}>
+                <Pressable onPress={handleResend} disabled={busy}>
                   {({ pressed }) => (
                     <Text
                       style={[
@@ -165,14 +187,15 @@ const VerificationScreen = () => {
                   }}
                   style={styles.codeInput}
                   value={digit}
-                  onChangeText={(value) =>
-                    handleCodeChange(value, index)
-                  }
+                  onChangeText={(value) => handleCodeChange(value, index)}
                   onKeyPress={({ nativeEvent }) =>
                     handleKeyPress(nativeEvent.key, index)
                   }
                   keyboardType="number-pad"
-                  maxLength={1}
+                  maxLength={OTP_LENGTH}
+                  editable={!busy}
+                  autoComplete={index === 0 ? "one-time-code" : "off"}
+                  accessibilityLabel={`Code digit ${index + 1}`}
                   selectTextOnFocus
                   textAlign="center"
                 />
@@ -185,6 +208,7 @@ const VerificationScreen = () => {
                 pressed && styles.buttonPressed,
               ]}
               onPress={handleVerify}
+              disabled={busy}
             >
               <Text style={styles.buttonText}>VERIFY</Text>
             </Pressable>

@@ -1,4 +1,8 @@
 import { Colors, Fonts } from "@/constants/theme";
+import { AuthFeedback } from '@/components/auth-feedback';
+import { useAuthAction } from '@/hooks/use-auth-action';
+import { normalizeEmail, socialSignIn } from '@/lib/auth';
+import { getSupabase } from '@/lib/supabase';
 import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
@@ -19,27 +23,27 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [rememberMe, setRememberMe] = useState(false);
+  const { busy, error, run } = useAuthAction();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    console.log({
-      email,
-      password,
-      rememberMe,
-    });
-  };
+  const handleLogin = () => run(async () => {
+    const normalizedEmail = normalizeEmail(email);
+    if (!password) throw new Error('Enter your password.');
+    const { error } = await getSupabase().auth.signInWithPassword({ email: normalizedEmail, password });
+    if (error) throw error;
+    router.replace('/home');
+  });
 
   const handleFacebookLogin = () => {
-    console.log("Facebook login");
+    void run(async () => { if (await socialSignIn('facebook')) router.replace('/home'); });
   };
 
   const handleTwitterLogin = () => {
-    console.log("Twitter login");
+    void run(async () => { if (await socialSignIn('twitter')) router.replace('/home'); });
   };
 
   const handleAppleLogin = () => {
-    console.log("Apple login");
+    void run(async () => { if (await socialSignIn('apple')) router.replace('/home'); });
   };
 
   return (
@@ -77,6 +81,7 @@ const LoginScreen = () => {
           ========================== */}
 
           <View style={styles.formContainer}>
+            <AuthFeedback busy={busy} error={error} />
             {/* Email */}
 
             <Text style={styles.label}>EMAIL</Text>
@@ -133,27 +138,7 @@ const LoginScreen = () => {
             ========================== */}
 
             <View style={styles.options}>
-              <Pressable
-                style={styles.rememberContainer}
-                onPress={() => setRememberMe((prev) => !prev)}
-                accessibilityRole="checkbox"
-                accessibilityState={{
-                  checked: rememberMe,
-                }}
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    rememberMe && styles.checkboxChecked,
-                  ]}
-                >
-                  {rememberMe && (
-                    <AntDesign name="check" size={11} color={Colors.white} />
-                  )}
-                </View>
-
-                <Text style={styles.rememberText}>Remember me</Text>
-              </Pressable>
+              <Text style={styles.rememberText}>Stay signed in securely</Text>
 
               <Pressable
                 onPress={() => router.push("/forgot-password")}
@@ -182,6 +167,7 @@ const LoginScreen = () => {
                 pressed && styles.loginButtonPressed,
               ]}
               onPress={handleLogin}
+              disabled={busy}
               accessibilityRole="button"
             >
               <Text style={styles.loginButtonText}>LOG IN</Text>
@@ -192,7 +178,7 @@ const LoginScreen = () => {
             ========================== */}
 
             <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account?</Text>
+              <Text style={styles.signupText}>Don&apos;t have an account?</Text>
 
               <Pressable
                 onPress={() => router.push("/signup")}
@@ -228,6 +214,7 @@ const LoginScreen = () => {
                   pressed && styles.socialButtonPressed,
                 ]}
                 onPress={handleFacebookLogin}
+                disabled={busy}
                 accessibilityRole="button"
                 accessibilityLabel="Continue with Facebook"
               >
@@ -243,6 +230,7 @@ const LoginScreen = () => {
                   pressed && styles.socialButtonPressed,
                 ]}
                 onPress={handleTwitterLogin}
+                disabled={busy}
                 accessibilityRole="button"
                 accessibilityLabel="Continue with Twitter"
               >
@@ -258,6 +246,7 @@ const LoginScreen = () => {
                   pressed && styles.socialButtonPressed,
                 ]}
                 onPress={handleAppleLogin}
+                disabled={busy}
                 accessibilityRole="button"
                 accessibilityLabel="Continue with Apple"
               >

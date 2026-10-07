@@ -52,7 +52,7 @@ const OnboardingScreen = () => {
   const flatListRef = useRef<FlatList>(null);
   const isLastSlide = currentIndex === onboardingData.length - 1;
 
-  const buttonScale = useRef(new Animated.Value(1)).current;
+  const [buttonScale] = useState(() => new Animated.Value(1));
   const handlePressIn = () => {
     Animated.spring(buttonScale, {
       toValue: 0.97,

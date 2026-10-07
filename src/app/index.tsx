@@ -1,10 +1,12 @@
 import { Colors } from "@/constants/theme";
+import { useAuth } from '@/providers/auth-provider';
 import { router } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Animated, Image, StyleSheet, View } from "react-native";
 
 const HomeScreen = () => {
-  const decorationAnimation = useRef(new Animated.Value(0)).current;
+  const { session } = useAuth();
+  const [decorationAnimation] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const decorationTimer = setTimeout(() => {
@@ -17,14 +19,14 @@ const HomeScreen = () => {
     }, 1000);
 
     const navigationTimer = setTimeout(() => {
-      router.replace("/onboarding");
+      router.replace(session ? '/home' : '/onboarding');
     }, 2500);
 
     return () => {
       clearTimeout(decorationTimer);
       clearTimeout(navigationTimer);
     };
-  }, [decorationAnimation]);
+  }, [decorationAnimation, session]);
 
   return (
     <View style={styles.container}>

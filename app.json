@@ -8,7 +8,9 @@
     "userInterfaceStyle": "automatic",
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      ["expo-location", { "locationWhenInUsePermission": "Allow Food Delivery to use your location to set your delivery address." }]
     ],
     "experiments": {
       "typedRoutes": true,
