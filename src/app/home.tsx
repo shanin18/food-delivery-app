@@ -1,3 +1,4 @@
+import { useFood } from "@/providers/food-provider";
 import { OfferPopup } from "@/components/offer-popup";
 import { Colors, Fonts } from "@/constants/theme";
 import { restaurants } from "@/data/catalog";
@@ -41,6 +42,8 @@ const categories = [
 ];
 
 export default function HomeScreen() {
+  const { items } = useFood();
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   return (
     <SafeAreaView
       style={styles.safeArea}
@@ -79,7 +82,7 @@ export default function HomeScreen() {
               />
 
               <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>2</Text>
+                <Text style={styles.cartBadgeText}>{cartCount}</Text>
               </View>
             </Pressable>
           </View>
@@ -123,6 +126,8 @@ export default function HomeScreen() {
             {categories.map((category, index) => (
               <Pressable
                 key={category.id}
+                accessibilityRole="button"
+                onPress={() => router.push({ pathname: "/food-category", params: { category: category.name } })}
                 style={[
                   styles.categoryCard,
                   index === 0 && styles.activeCategory,
@@ -161,7 +166,7 @@ export default function HomeScreen() {
 
           <View style={styles.restaurantList}>
             {restaurants.map((restaurant) => (
-              <Pressable key={restaurant.id} style={styles.restaurantCard}>
+              <Pressable key={restaurant.id} accessibilityRole="button" accessibilityLabel={`View ${restaurant.name}`} onPress={() => router.push({ pathname: "/restaurant-details", params: { id: String(restaurant.id) } })} style={styles.restaurantCard}>
                 <Image
                   source={restaurant.image}
                   style={styles.restaurantImage}

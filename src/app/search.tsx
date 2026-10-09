@@ -1,10 +1,11 @@
+import { FoodCard } from "@/components/food-card";
 import { Colors, Fonts } from "@/constants/theme";
 import { dishes, restaurants } from "@/data/catalog";
 import { clearRecentSearches, getRecentSearches, matchesSearch as matches, rememberSearch } from "@/lib/search";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
-import { Image, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const suggestedKeywords = ["Burger", "Sandwich", "Hot Dog", "Pizza", "Salad", "Desserts"];
@@ -13,7 +14,6 @@ export default function SearchScreen() {
   const { q, focus } = useLocalSearchParams<{ q?: string; focus?: string }>();
   const [query, setQuery] = useState(q ?? "");
   const [recent, setRecent] = useState(getRecentSearches);
-  const [selected, setSelected] = useState<(typeof restaurants)[number] | null>(null);
   const input = useRef<TextInput>(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const suggestions = [...new Set([...recent, ...suggestedKeywords, ...dishes.map(dish => dish.name), ...restaurants.map(restaurant => restaurant.name)])].filter(value => matches(query, value)).slice(0, 5);
@@ -35,7 +35,7 @@ export default function SearchScreen() {
   const openRestaurant = (restaurant: (typeof restaurants)[number]) => {
     remember();
     Keyboard.dismiss();
-    setSelected(restaurant);
+    router.push({ pathname: "/restaurant-details", params: { id: String(restaurant.id) } });
   };
 
   return (
@@ -77,23 +77,10 @@ export default function SearchScreen() {
         {!restaurantResults.length && <Text style={styles.empty}>No restaurants match your search.</Text>}
         <Text style={[styles.heading, styles.foodHeading]}>{query.trim() ? "Matching Food" : "Popular Fast Food"}</Text>
         <View style={styles.foodGrid}>
-          {foodResults.map(dish => {
-            const restaurant = restaurants.find(item => item.id === dish.restaurantId)!;
-            return <Pressable key={dish.id} accessibilityRole="button" accessibilityLabel={`View ${dish.name} at ${restaurant.name}`} onPress={() => openRestaurant(restaurant)} style={styles.foodCard}><Image source={dish.image} style={styles.foodImage} resizeMode="contain" /><Text style={styles.foodName}>{dish.name}</Text><Text style={styles.foodRestaurant}>{restaurant.name}</Text></Pressable>;
-          })}
+          {foodResults.map(dish => <FoodCard key={dish.id} dish={dish} />)}
         </View>
         {!foodResults.length && <Text style={styles.empty}>No dishes match your search. Try Burger, Hot Dog, or Salad.</Text>}
       </ScrollView>
-      <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(null)}>
-        <SafeAreaView style={styles.modalBackdrop}>
-          <View style={styles.details} accessibilityViewIsModal>
-            <ScrollView contentContainerStyle={styles.detailsContent}>
-              <Pressable accessibilityRole="button" accessibilityLabel="Close restaurant details" onPress={() => setSelected(null)} style={styles.detailsClose}><Ionicons name="close" size={24} color={Colors.text} /></Pressable>
-              {selected && <><Image source={selected.image} style={styles.detailImage} /><Text style={styles.detailTitle}>{selected.name}</Text><Text style={styles.empty}>{selected.categories}</Text><Text style={styles.detailInfo}>★ {selected.rating}  ·  {selected.delivery} delivery  ·  {selected.time}</Text><Pressable accessibilityRole="button" style={styles.done} onPress={() => setSelected(null)}><Text style={styles.doneText}>BACK TO SEARCH</Text></Pressable></>}
-            </ScrollView>
-          </View>
-        </SafeAreaView>
-      </Modal>
     </SafeAreaView>
   );
 }
@@ -123,19 +110,10 @@ const styles = StyleSheet.create({
   rating: { flexDirection: "row", alignItems: "center", gap: 4 },
   ratingText: { fontFamily: Fonts.regular, fontSize: 14, color: Colors.darkBackground },
   foodHeading: { marginTop: 30 },
-  foodGrid: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
+  foodGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
   foodCard: { flexBasis: "45%", flexGrow: 1, maxWidth: "50%", padding: 12, borderRadius: 18, backgroundColor: Colors.surface },
   foodImage: { width: "100%", height: 100, borderRadius: 14, marginBottom: 10 },
   foodName: { fontFamily: Fonts.bold, fontSize: 14, color: Colors.text },
   foodRestaurant: { fontFamily: Fonts.regular, fontSize: 12, color: Colors.textSecondary, marginTop: 5 },
   empty: { fontFamily: Fonts.regular, fontSize: 14, color: Colors.textSecondary, lineHeight: 22, paddingVertical: 12 },
-  modalBackdrop: { flex: 1, backgroundColor: "rgba(18,18,35,0.5)", justifyContent: "flex-end" },
-  details: { backgroundColor: Colors.white, borderRadius: 24, margin: 16, maxHeight: "90%" },
-  detailsContent: { padding: 20 },
-  detailsClose: { alignSelf: "flex-end", padding: 10, marginBottom: 8 },
-  detailImage: { width: "100%", height: 180, borderRadius: 16 },
-  detailTitle: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.text, marginTop: 20 },
-  detailInfo: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.primary, marginBottom: 24 },
-  done: { backgroundColor: Colors.primary, borderRadius: 12, padding: 20, alignItems: "center" },
-  doneText: { fontFamily: Fonts.bold, fontSize: 14, color: Colors.white },
 });
