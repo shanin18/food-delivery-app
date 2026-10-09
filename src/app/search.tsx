@@ -1,0 +1,125 @@
+import { Colors, Fonts } from "@/constants/theme";
+import { dishes, restaurants } from "@/data/catalog";
+import { clearRecentSearches, getRecentSearches, matchesSearch as matches, rememberSearch } from "@/lib/search";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import { Image, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const suggestedKeywords = ["Burger", "Sandwich", "Hot Dog", "Salad"];
+
+export default function SearchScreen() {
+  const [query, setQuery] = useState("");
+  const [recent, setRecent] = useState(getRecentSearches);
+  const [selected, setSelected] = useState<(typeof restaurants)[number] | null>(null);
+  const input = useRef<TextInput>(null);
+  const restaurantResults = restaurants.filter(restaurant => matches(query, `${restaurant.name} ${restaurant.categories} ${dishes.filter(dish => dish.restaurantId === restaurant.id).map(dish => `${dish.name} ${dish.keywords}`).join(" ")}`));
+  const foodResults = dishes.filter(dish => matches(query, `${dish.name} ${dish.keywords} ${restaurants.find(restaurant => restaurant.id === dish.restaurantId)?.name ?? ""}`));
+  const keywords = [...recent, ...suggestedKeywords.filter(keyword => !recent.some(value => value.toLowerCase() === keyword.toLowerCase()))];
+
+  const remember = (value = query) => {
+    const term = value.trim().slice(0, 60);
+    if (!term) return;
+    setRecent(rememberSearch(term));
+  };
+  const openRestaurant = (restaurant: (typeof restaurants)[number]) => {
+    remember();
+    Keyboard.dismiss();
+    setSelected(restaurant);
+  };
+
+  return (
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.header}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Back to Home" onPress={() => router.canGoBack() ? router.back() : router.replace("/home")} style={styles.back}>
+          <Ionicons name="chevron-back" size={22} color={Colors.darkBackground} />
+        </Pressable>
+        <Text style={styles.headerTitle}>Search</Text>
+      </View>
+      <View style={styles.searchBox}>
+        <Ionicons name="search-outline" size={21} color={Colors.imagePlaceholder} />
+        <TextInput ref={input} value={query} onChangeText={setQuery} placeholder="Search dishes, restaurants" placeholderTextColor={Colors.textSecondary} style={styles.input} accessibilityLabel="Search dishes and restaurants" autoCapitalize="none" autoCorrect={false} maxLength={60} returnKeyType="search" onSubmitEditing={() => { remember(); Keyboard.dismiss(); }} />
+        {!!query && <Pressable accessibilityRole="button" accessibilityLabel="Clear search" hitSlop={10} onPress={() => { setQuery(""); input.current?.focus(); }}><Ionicons name="close-circle" size={22} color={Colors.imagePlaceholder} /></Pressable>}
+      </View>
+      <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+        <View style={styles.sectionHeading}>
+          <Text style={styles.heading}>{recent.length ? "Recent Keywords" : "Popular Keywords"}</Text>
+          {!!recent.length && <Pressable accessibilityRole="button" onPress={() => setRecent(clearRecentSearches())} hitSlop={8}><Text style={styles.clear}>Clear history</Text></Pressable>}
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.keywords}>
+          {keywords.map(keyword => <Pressable key={keyword} accessibilityRole="button" onPress={() => { setQuery(keyword); remember(keyword); Keyboard.dismiss(); }} style={[styles.chip, query.toLowerCase() === keyword.toLowerCase() && styles.activeChip]}><Text style={styles.chipText}>{keyword}</Text></Pressable>)}
+        </ScrollView>
+        <Text style={styles.heading}>{query.trim() ? "Restaurants" : "Suggested Restaurants"}</Text>
+        {restaurantResults.map(restaurant => (
+          <Pressable key={restaurant.id} accessibilityRole="button" accessibilityLabel={`View ${restaurant.name}`} onPress={() => openRestaurant(restaurant)} style={styles.restaurant}>
+            <Image source={restaurant.image} style={styles.restaurantImage} />
+            <View style={styles.restaurantText}>
+              <Text style={styles.restaurantName}>{restaurant.name}</Text>
+              <View style={styles.rating}><Ionicons name="star-outline" size={18} color={Colors.primary} /><Text style={styles.ratingText}>{restaurant.rating}</Text></View>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={Colors.imagePlaceholder} />
+          </Pressable>
+        ))}
+        {!restaurantResults.length && <Text style={styles.empty}>No restaurants match your search.</Text>}
+        <Text style={[styles.heading, styles.foodHeading]}>{query.trim() ? "Matching Food" : "Popular Fast Food"}</Text>
+        <View style={styles.foodGrid}>
+          {foodResults.map(dish => {
+            const restaurant = restaurants.find(item => item.id === dish.restaurantId)!;
+            return <Pressable key={dish.id} accessibilityRole="button" accessibilityLabel={`View ${dish.name} at ${restaurant.name}`} onPress={() => openRestaurant(restaurant)} style={styles.foodCard}><Image source={dish.image} style={styles.foodImage} resizeMode="contain" /><Text style={styles.foodName}>{dish.name}</Text><Text style={styles.foodRestaurant}>{restaurant.name}</Text></Pressable>;
+          })}
+        </View>
+        {!foodResults.length && <Text style={styles.empty}>No dishes match your search. Try Burger, Hot Dog, or Salad.</Text>}
+      </ScrollView>
+      <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(null)}>
+        <SafeAreaView style={styles.modalBackdrop}>
+          <View style={styles.details} accessibilityViewIsModal>
+            <ScrollView contentContainerStyle={styles.detailsContent}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close restaurant details" onPress={() => setSelected(null)} style={styles.detailsClose}><Ionicons name="close" size={24} color={Colors.text} /></Pressable>
+              {selected && <><Image source={selected.image} style={styles.detailImage} /><Text style={styles.detailTitle}>{selected.name}</Text><Text style={styles.empty}>{selected.categories}</Text><Text style={styles.detailInfo}>★ {selected.rating}  ·  {selected.delivery} delivery  ·  {selected.time}</Text><Pressable accessibilityRole="button" style={styles.done} onPress={() => setSelected(null)}><Text style={styles.doneText}>BACK TO SEARCH</Text></Pressable></>}
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </Modal>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: Colors.background },
+  header: { flexDirection: "row", alignItems: "center", gap: 16, paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24 },
+  back: { width: 48, height: 48, borderRadius: 24, backgroundColor: Colors.surfaceSecondary, alignItems: "center", justifyContent: "center" },
+  headerTitle: { fontFamily: Fonts.regular, fontSize: 18, color: Colors.darkBackground },
+  searchBox: { marginHorizontal: 24, paddingHorizontal: 18, minHeight: 64, borderRadius: 12, backgroundColor: Colors.surface, flexDirection: "row", alignItems: "center", gap: 10 },
+  input: { flex: 1, paddingVertical: 18, fontFamily: Fonts.regular, fontSize: 14, color: Colors.text },
+  content: { paddingHorizontal: 24, paddingTop: 26, paddingBottom: 32 },
+  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
+  heading: { fontFamily: Fonts.regular, fontSize: 20, color: Colors.darkBackground, marginBottom: 16 },
+  clear: { fontFamily: Fonts.medium, fontSize: 12, color: Colors.primary, marginBottom: 16 },
+  keywords: { gap: 10, paddingBottom: 30 },
+  chip: { borderWidth: 1, borderColor: Colors.border, borderRadius: 25, paddingHorizontal: 20, paddingVertical: 14 },
+  activeChip: { borderColor: Colors.primary, backgroundColor: "#FFF1E8" },
+  chipText: { fontFamily: Fonts.regular, fontSize: 14, color: Colors.darkBackground },
+  restaurant: { flexDirection: "row", alignItems: "center", gap: 12, borderBottomWidth: 1, borderBottomColor: Colors.border, paddingVertical: 14 },
+  restaurantImage: { width: 60, height: 60, borderRadius: 10 },
+  restaurantText: { flex: 1, gap: 6 },
+  restaurantName: { fontFamily: Fonts.regular, fontSize: 15, color: Colors.text },
+  rating: { flexDirection: "row", alignItems: "center", gap: 4 },
+  ratingText: { fontFamily: Fonts.regular, fontSize: 14, color: Colors.darkBackground },
+  foodHeading: { marginTop: 30 },
+  foodGrid: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
+  foodCard: { flexBasis: "45%", flexGrow: 1, maxWidth: "50%", padding: 12, borderRadius: 18, backgroundColor: Colors.surface },
+  foodImage: { width: "100%", height: 100, borderRadius: 14, marginBottom: 10 },
+  foodName: { fontFamily: Fonts.bold, fontSize: 14, color: Colors.text },
+  foodRestaurant: { fontFamily: Fonts.regular, fontSize: 12, color: Colors.textSecondary, marginTop: 5 },
+  empty: { fontFamily: Fonts.regular, fontSize: 14, color: Colors.textSecondary, lineHeight: 22, paddingVertical: 12 },
+  modalBackdrop: { flex: 1, backgroundColor: "rgba(18,18,35,0.5)", justifyContent: "flex-end" },
+  details: { backgroundColor: Colors.white, borderRadius: 24, margin: 16, maxHeight: "90%" },
+  detailsContent: { padding: 20 },
+  detailsClose: { alignSelf: "flex-end", padding: 10, marginBottom: 8 },
+  detailImage: { width: "100%", height: 180, borderRadius: 16 },
+  detailTitle: { fontFamily: Fonts.bold, fontSize: 22, color: Colors.text, marginTop: 20 },
+  detailInfo: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.primary, marginBottom: 24 },
+  done: { backgroundColor: Colors.primary, borderRadius: 12, padding: 20, alignItems: "center" },
+  doneText: { fontFamily: Fonts.bold, fontSize: 14, color: Colors.white },
+});

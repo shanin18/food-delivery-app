@@ -1,5 +1,6 @@
 import { OfferPopup } from "@/components/offer-popup";
 import { Colors, Fonts } from "@/constants/theme";
+import { restaurants } from "@/data/catalog";
 import {
   Feather,
   FontAwesome6,
@@ -13,7 +14,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,37 +34,24 @@ const categories = [
     name: "Burger",
     image: require("../../assets/images/home/burger.png"),
   },
-];
-
-const restaurants = [
-  {
-    id: 1,
-    name: "Rose Garden Restaurant",
-    categories: "Burger - Chicken - Riche - Wings",
-    rating: "4.7",
-    delivery: "Free",
-    time: "20 min",
-    image: require("../../assets/images/home/restaurant-1.png"),
-  },
-  {
-    id: 2,
-    name: "Healthy Food Restaurant",
-    categories: "Salad - Healthy - Vegetables",
-    rating: "4.5",
-    delivery: "Free",
-    time: "25 min",
-    image: require("../../assets/images/home/restaurant-2.png"),
-  },
+  { id: 4, name: "Pizza", icon: "🍕" },
+  { id: 5, name: "Sandwich", icon: "🥪" },
+  { id: 6, name: "Salad", icon: "🥗" },
+  { id: 7, name: "Desserts", icon: "🍰" },
 ];
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={["top", "bottom", "left", "right"]}
+    >
       <OfferPopup />
       <View style={styles.screen}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          stickyHeaderIndices={[2]}
         >
           {/* Header */}
 
@@ -105,14 +92,19 @@ export default function HomeScreen() {
 
           {/* Search */}
 
-          <View style={styles.searchContainer}>
+          <View style={styles.stickySearch}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Search dishes and restaurants"
+            onPress={() => router.push("/search")}
+            style={styles.searchContainer}
+          >
             <Feather name="search" size={20} color={Colors.imagePlaceholder} />
 
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search dishes, restaurants"
-              placeholderTextColor={Colors.textSecondary}
-            />
+            <Text style={[styles.searchInput, { color: Colors.textSecondary }]}>
+              Search dishes, restaurants
+            </Text>
+          </Pressable>
           </View>
 
           {/* Categories */}
@@ -132,6 +124,7 @@ export default function HomeScreen() {
 
           <ScrollView
             horizontal
+            style={styles.categoryScroll}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categories}
           >
@@ -229,7 +222,12 @@ export default function HomeScreen() {
             <Text style={[styles.tabText, styles.activeTabText]}>Home</Text>
           </Pressable>
 
-          <Pressable style={styles.tab}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Search"
+            onPress={() => router.push("/search")}
+            style={styles.tab}
+          >
             <Ionicons
               name="search-outline"
               size={24}
@@ -270,12 +268,11 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 18,
+    paddingTop: 16,
     paddingBottom: 30,
   },
 
   // Header
-
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -307,8 +304,8 @@ const styles = StyleSheet.create({
   },
 
   cartButton: {
-    width: 45,
-    height: 45,
+    width: 49,
+    height: 49,
     borderRadius: 23,
     backgroundColor: Colors.darkBackground,
     justifyContent: "center",
@@ -319,9 +316,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -2,
     top: -5,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 25,
+    height: 25,
+    borderRadius: "50%",
     backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
@@ -336,7 +333,7 @@ const styles = StyleSheet.create({
   // Greeting
 
   greeting: {
-    marginTop: 22,
+    marginTop: 24,
     fontFamily: Fonts.regular,
     fontSize: 16,
     color: Colors.text,
@@ -347,9 +344,15 @@ const styles = StyleSheet.create({
   },
 
   // Search
+  stickySearch: {
+    backgroundColor: Colors.background,
+    marginHorizontal: -24,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
 
   searchContainer: {
-    marginTop: 18,
     height: 62,
     paddingHorizontal: 18,
     borderRadius: 12,
@@ -393,19 +396,29 @@ const styles = StyleSheet.create({
 
   seeAllText: {
     fontFamily: Fonts.regular,
-    fontSize: 13,
-    color: Colors.textSecondary,
+    fontSize: 14,
+    color: Colors.text,
   },
 
   // Categories
 
+  categoryScroll: {
+    flexGrow: 0,
+    marginHorizontal: -24,
+  },
+
   categories: {
     gap: 12,
-    paddingRight: 24,
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
 
   categoryCard: {
     minWidth: 115,
+    flexGrow: 0,
+    flexShrink: 0,
+    alignSelf: "center",
     height: 60,
     paddingHorizontal: 10,
     borderRadius: 30,
@@ -415,14 +428,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 9,
 
-    shadowColor: Colors.black,
+    shadowColor: Colors.textSecondary,
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 2,
     },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
 
   activeCategory: {
@@ -451,7 +464,7 @@ const styles = StyleSheet.create({
 
   categoryText: {
     fontFamily: Fonts.bold,
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.text,
   },
 
@@ -483,7 +496,7 @@ const styles = StyleSheet.create({
   restaurantCategories: {
     marginTop: 4,
     fontFamily: Fonts.regular,
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.imagePlaceholder,
   },
 
@@ -502,13 +515,13 @@ const styles = StyleSheet.create({
 
   infoBold: {
     fontFamily: Fonts.bold,
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.text,
   },
 
   infoText: {
     fontFamily: Fonts.regular,
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.text,
   },
 
