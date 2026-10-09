@@ -35,7 +35,7 @@ export default function FoodDetailsScreen() {
     </ScrollView>
     <View style={styles.purchase}>
       <View style={styles.purchaseRow}><Text style={styles.price}>${unitPrice * quantity}</Text><View style={styles.quantity}><Pressable accessibilityRole="button" accessibilityLabel="Decrease quantity" disabled={quantity === 1} onPress={() => { setQuantity(value => value - 1); setAdded(false); }} style={[styles.quantityButton, quantity === 1 && { opacity: 0.4 }]}><Ionicons name="remove" size={18} color={Colors.white} /></Pressable><Text style={styles.quantityText}>{quantity}</Text><Pressable accessibilityRole="button" accessibilityLabel="Increase quantity" disabled={quantity === 99} onPress={() => { setQuantity(value => value + 1); setAdded(false); }} style={styles.quantityButton}><Ionicons name="add" size={18} color={Colors.white} /></Pressable></View></View>
-      <Pressable accessibilityRole="button" disabled={added} style={styles.addButton} onPress={() => { addItem({ dishId: dish.id, size: selectedSize, quantity, unitPrice }); setAdded(true); }}><Text accessibilityLiveRegion="polite" style={styles.addText}>{added ? 'ADDED TO CART' : 'ADD TO CART'}</Text></Pressable>
+      <Pressable accessibilityRole="button" style={styles.addButton} onPress={() => { if (added) { router.push("/cart"); return; } addItem({ dishId: dish.id, size: selectedSize, quantity, unitPrice }); setAdded(true); }}><Text accessibilityLiveRegion="polite" style={styles.addText}>{added ? 'VIEW CART' : 'ADD TO CART'}</Text></Pressable>
     </View>
   </SafeAreaView>;
 }

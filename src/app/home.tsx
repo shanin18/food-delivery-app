@@ -74,7 +74,7 @@ export default function HomeScreen() {
               </View>
             </Pressable>
 
-            <Pressable style={styles.cartButton}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Open cart" onPress={() => router.push("/cart")} style={styles.cartButton}>
               <Ionicons
                 name="bag-handle-outline"
                 size={21}

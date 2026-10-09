@@ -18,7 +18,7 @@ const RootNavigator = () => {
     <Stack.Screen name="(auth)" />
     <Stack.Screen name="auth-callback" />
     <Stack.Protected guard={!session}><Stack.Screen name="onboarding" /></Stack.Protected>
-    <Stack.Protected guard={!!session}><Stack.Screen name="home" /><Stack.Screen name="search" /><Stack.Screen name="food-category" /><Stack.Screen name="food-details" /><Stack.Screen name="restaurant-details" /></Stack.Protected>
+    <Stack.Protected guard={!!session}><Stack.Screen name="home" /><Stack.Screen name="search" /><Stack.Screen name="food-category" /><Stack.Screen name="food-details" /><Stack.Screen name="restaurant-details" /><Stack.Screen name="cart" /></Stack.Protected>
   </Stack>;
 };
 
