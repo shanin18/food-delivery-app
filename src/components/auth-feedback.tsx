@@ -2,10 +2,10 @@ import { Colors } from "@/constants/theme";
 import { ActivityIndicator, Text, View } from "react-native";
 
 export function AuthFeedback({
-  busy,
+  busy = false,
   error,
 }: {
-  busy: boolean;
+  busy?: boolean;
   error: string | null;
 }) {
   return (

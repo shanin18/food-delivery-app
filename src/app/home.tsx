@@ -1,3 +1,4 @@
+import { OfferPopup } from "@/components/offer-popup";
 import { Colors, Fonts } from "@/constants/theme";
 import {
   Feather,
@@ -59,6 +60,7 @@ const restaurants = [
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+      <OfferPopup />
       <View style={styles.screen}>
         <ScrollView
           showsVerticalScrollIndicator={false}

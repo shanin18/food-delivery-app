@@ -1,3 +1,4 @@
+import { ButtonContent } from "@/components/button-content";
 import { Colors, Fonts } from "@/constants/theme";
 import { AuthFeedback } from '@/components/auth-feedback';
 import { useAuthAction } from '@/hooks/use-auth-action';
@@ -79,7 +80,7 @@ const ForgotPasswordScreen = () => {
           </ImageBackground>
 
           <View style={styles.formContainer}>
-            <AuthFeedback busy={busy} error={error} />
+            <AuthFeedback error={error} />
             <Text style={styles.label}>EMAIL</Text>
 
             <TextInput
@@ -106,7 +107,7 @@ const ForgotPasswordScreen = () => {
               disabled={busy}
               accessibilityRole="button"
             >
-              <Text style={styles.buttonText}>SEND CODE</Text>
+              <ButtonContent busy={busy}><Text style={styles.buttonText}>SEND CODE</Text></ButtonContent>
             </Pressable>
           </View>
         </ScrollView>

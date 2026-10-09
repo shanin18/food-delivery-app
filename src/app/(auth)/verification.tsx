@@ -1,3 +1,4 @@
+import { ButtonContent } from "@/components/button-content";
 import { AuthFeedback } from "@/components/auth-feedback";
 import { Colors, Fonts } from "@/constants/theme";
 import { useAuthAction } from "@/hooks/use-auth-action";
@@ -26,7 +27,7 @@ const VerificationScreen = () => {
     email?: string;
     type?: string;
   }>();
-  const { busy, error, run } = useAuthAction();
+  const { busy, activeAction, error, run } = useAuthAction();
 
   const [code, setCode] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [seconds, setSeconds] = useState(RESEND_TIME);
@@ -85,7 +86,7 @@ const VerificationScreen = () => {
       setCode(Array(OTP_LENGTH).fill(""));
       setSeconds(RESEND_TIME);
       inputRefs.current[0]?.focus();
-    });
+    }, "resend");
 
   const handleVerify = () =>
     run(async () => {
@@ -154,7 +155,7 @@ const VerificationScreen = () => {
           </ImageBackground>
 
           <View style={styles.formContainer}>
-            <AuthFeedback busy={busy} error={error} />
+            <AuthFeedback error={error} />
             <View style={styles.codeHeader}>
               <Text style={styles.label}>CODE</Text>
 
@@ -165,14 +166,14 @@ const VerificationScreen = () => {
               ) : (
                 <Pressable onPress={handleResend} disabled={busy}>
                   {({ pressed }) => (
-                    <Text
+                    <ButtonContent busy={busy && activeAction === "resend"} color={Colors.primary}><Text
                       style={[
                         styles.resendButton,
                         pressed && styles.resendPressed,
                       ]}
                     >
                       Resend
-                    </Text>
+                    </Text></ButtonContent>
                   )}
                 </Pressable>
               )}
@@ -210,7 +211,7 @@ const VerificationScreen = () => {
               onPress={handleVerify}
               disabled={busy}
             >
-              <Text style={styles.buttonText}>VERIFY</Text>
+              <ButtonContent busy={busy && activeAction === "submit"}><Text style={styles.buttonText}>VERIFY</Text></ButtonContent>
             </Pressable>
           </View>
         </ScrollView>

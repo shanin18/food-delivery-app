@@ -1,3 +1,4 @@
+import { ButtonContent } from "@/components/button-content";
 import { AuthFeedback } from "@/components/auth-feedback";
 import LocationMap from "@/components/location-map";
 import { Colors, Fonts } from "@/constants/theme";
@@ -14,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const LocationAccessScreen = () => {
   const { session } = useAuth();
-  const { busy, error, run } = useAuthAction();
+  const { busy, activeAction, error, run } = useAuthAction();
 
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [phase, setPhase] = useState<"locating" | "saving" | null>(null);
@@ -80,7 +81,7 @@ const LocationAccessScreen = () => {
       } finally {
         setPhase(null);
       }
-    });
+    }, "locate");
 
   // =========================
   // Save location
@@ -140,7 +141,7 @@ const LocationAccessScreen = () => {
   // =========================
 
   const getButtonText = () => {
-    if (busy) {
+    if (busy && !(coordinates && activeAction === "locate")) {
       return phase === "saving" ? "SAVING LOCATION…" : "FINDING LOCATION…";
     }
 
@@ -173,7 +174,7 @@ const LocationAccessScreen = () => {
         ========================== */}
 
         <View style={styles.bottomContent}>
-          <AuthFeedback busy={busy} error={error} />
+          <AuthFeedback error={error} />
 
           {/* Main button */}
 
@@ -187,9 +188,8 @@ const LocationAccessScreen = () => {
             disabled={busy}
             accessibilityRole="button"
           >
-            <Text style={styles.buttonText}>{getButtonText()}</Text>
-
-            {!busy && (
+            <ButtonContent busy={busy && !(coordinates && activeAction === "locate")}>
+              <Text style={styles.buttonText}>{getButtonText()}</Text>
               <View style={styles.locationIcon}>
                 <Ionicons
                   name="location-outline"
@@ -197,7 +197,7 @@ const LocationAccessScreen = () => {
                   color={Colors.white}
                 />
               </View>
-            )}
+            </ButtonContent>
           </Pressable>
 
           {/* Refresh */}
@@ -210,7 +210,7 @@ const LocationAccessScreen = () => {
               style={styles.refreshButton}
             >
               {({ pressed }) => (
-                <Text
+                <ButtonContent busy={busy && activeAction === "locate"} color={Colors.primary}><Text
                   style={[
                     styles.refreshText,
                     pressed && styles.linkPressed,
@@ -218,7 +218,7 @@ const LocationAccessScreen = () => {
                   ]}
                 >
                   Refresh my location
-                </Text>
+                </Text></ButtonContent>
               )}
             </Pressable>
           )}

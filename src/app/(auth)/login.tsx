@@ -1,3 +1,4 @@
+import { ButtonContent } from "@/components/button-content";
 import { Colors, Fonts } from "@/constants/theme";
 import { AuthFeedback } from '@/components/auth-feedback';
 import { useAuthAction } from '@/hooks/use-auth-action';
@@ -23,7 +24,7 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { busy, error, run } = useAuthAction();
+  const { busy, activeAction, error, run } = useAuthAction();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => run(async () => {
@@ -35,15 +36,15 @@ const LoginScreen = () => {
   });
 
   const handleFacebookLogin = () => {
-    void run(async () => { if (await socialSignIn('facebook')) router.replace('/home'); });
+    void run(async () => { if (await socialSignIn('facebook')) router.replace('/home'); }, 'facebook');
   };
 
   const handleTwitterLogin = () => {
-    void run(async () => { if (await socialSignIn('twitter')) router.replace('/home'); });
+    void run(async () => { if (await socialSignIn('twitter')) router.replace('/home'); }, 'twitter');
   };
 
   const handleAppleLogin = () => {
-    void run(async () => { if (await socialSignIn('apple')) router.replace('/home'); });
+    void run(async () => { if (await socialSignIn('apple')) router.replace('/home'); }, 'apple');
   };
 
   return (
@@ -81,7 +82,7 @@ const LoginScreen = () => {
           ========================== */}
 
           <View style={styles.formContainer}>
-            <AuthFeedback busy={busy} error={error} />
+            <AuthFeedback error={error} />
             {/* Email */}
 
             <Text style={styles.label}>EMAIL</Text>
@@ -170,7 +171,7 @@ const LoginScreen = () => {
               disabled={busy}
               accessibilityRole="button"
             >
-              <Text style={styles.loginButtonText}>LOG IN</Text>
+              <ButtonContent busy={busy && activeAction === "submit"}><Text style={styles.loginButtonText}>LOG IN</Text></ButtonContent>
             </Pressable>
 
             {/* =========================
@@ -218,7 +219,7 @@ const LoginScreen = () => {
                 accessibilityRole="button"
                 accessibilityLabel="Continue with Facebook"
               >
-                <FontAwesome name="facebook" size={22} color="#FFFFFF" />
+                <ButtonContent busy={busy && activeAction === "facebook"}><FontAwesome name="facebook" size={22} color="#FFFFFF" /></ButtonContent>
               </Pressable>
 
               {/* Twitter */}
@@ -234,7 +235,7 @@ const LoginScreen = () => {
                 accessibilityRole="button"
                 accessibilityLabel="Continue with Twitter"
               >
-                <FontAwesome name="twitter" size={22} color="#FFFFFF" />
+                <ButtonContent busy={busy && activeAction === "twitter"}><FontAwesome name="twitter" size={22} color="#FFFFFF" /></ButtonContent>
               </Pressable>
 
               {/* Apple */}
@@ -250,7 +251,7 @@ const LoginScreen = () => {
                 accessibilityRole="button"
                 accessibilityLabel="Continue with Apple"
               >
-                <AntDesign name="apple" size={22} color="#FFFFFF" />
+                <ButtonContent busy={busy && activeAction === "apple"}><AntDesign name="apple" size={22} color="#FFFFFF" /></ButtonContent>
               </Pressable>
             </View>
           </View>

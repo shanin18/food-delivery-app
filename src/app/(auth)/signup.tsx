@@ -1,3 +1,4 @@
+import { ButtonContent } from "@/components/button-content";
 import { AuthFeedback } from "@/components/auth-feedback";
 import { Colors, Fonts } from "@/constants/theme";
 import { useAuthAction } from "@/hooks/use-auth-action";
@@ -89,7 +90,7 @@ const SignupScreen = () => {
           </ImageBackground>
 
           <View style={styles.formContainer}>
-            <AuthFeedback busy={busy} error={error} />
+            <AuthFeedback error={error} />
             <Text style={styles.label}>NAME</Text>
 
             <TextInput
@@ -182,7 +183,7 @@ const SignupScreen = () => {
               onPress={handleSignup}
               disabled={busy}
             >
-              <Text style={styles.buttonText}>SIGN UP</Text>
+              <ButtonContent busy={busy}><Text style={styles.buttonText}>SIGN UP</Text></ButtonContent>
             </Pressable>
 
             <View style={styles.loginContainer}>

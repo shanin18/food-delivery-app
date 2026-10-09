@@ -1,3 +1,4 @@
+import { ButtonContent } from "@/components/button-content";
 import { AuthFeedback } from '@/components/auth-feedback';
 import { Colors, Fonts } from '@/constants/theme';
 import { useAuthAction } from '@/hooks/use-auth-action';
@@ -24,12 +25,12 @@ export default function ResetPasswordScreen() {
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
         <Text style={styles.title}>Reset password</Text>
         <Text style={styles.description}>Choose a new password with at least 6 characters.</Text>
-        <AuthFeedback busy={busy} error={error} />
+        <AuthFeedback error={error} />
         <Text style={styles.label}>NEW PASSWORD</Text>
         <TextInput accessibilityLabel="New password" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword" editable={!busy} />
         <Text style={styles.label}>CONFIRM PASSWORD</Text>
         <TextInput accessibilityLabel="Confirm new password" style={styles.input} value={confirmation} onChangeText={setConfirmation} secureTextEntry autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword" editable={!busy} />
-        <Pressable accessibilityRole="button" style={styles.button} disabled={busy} onPress={updatePassword}><Text style={styles.buttonText}>SAVE PASSWORD</Text></Pressable>
+        <Pressable accessibilityRole="button" style={styles.button} disabled={busy} onPress={updatePassword}><ButtonContent busy={busy}><Text style={styles.buttonText}>SAVE PASSWORD</Text></ButtonContent></Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
   </SafeAreaView>;
