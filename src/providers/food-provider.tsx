@@ -7,6 +7,7 @@ const FoodContext = createContext<{
   updateQuantity: (dishId: string, size: string, quantity: number) => void;
   removeItem: (dishId: string, size: string) => void;
   address: string; setAddress: (value: string) => void;
+  clearCart: () => void;
 } | null>(null);
 
 export function FoodProvider({ children }: { children: ReactNode }) {
@@ -20,7 +21,7 @@ export function FoodProvider({ children }: { children: ReactNode }) {
     return existing ? current.map(value => value === existing ? { ...value, quantity: value.quantity + item.quantity } : value) : [...current, item];
   });
   const toggleFavorite = (id: string) => setFavorites(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id]);
-  return <FoodContext.Provider value={{ items, favorites, addItem, toggleFavorite, updateQuantity, removeItem, address, setAddress }}>{children}</FoodContext.Provider>;
+  return <FoodContext.Provider value={{ items, favorites, addItem, toggleFavorite, updateQuantity, removeItem, address, setAddress, clearCart: () => setItems([]) }}>{children}</FoodContext.Provider>;
 }
 
 export function useFood() {

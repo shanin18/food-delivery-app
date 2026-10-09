@@ -4,7 +4,7 @@ import { useFood } from '@/providers/food-provider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CartScreen() {
@@ -25,7 +25,7 @@ export default function CartScreen() {
       return;
     }
     setAddressError(null);
-    Alert.alert('Checkout is not available yet', 'Your cart is ready. Ordering and payment still need to be connected before an order can be placed.');
+    router.push("/payment");
   };
   return <SafeAreaView style={styles.screen}>
     <KeyboardAvoidingView style={styles.layout} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

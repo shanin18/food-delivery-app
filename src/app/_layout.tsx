@@ -1,3 +1,4 @@
+import { PaymentProvider } from "@/providers/payment-provider";
 import { FontAssets } from "@/constants/theme";
 import { FoodProvider } from '@/providers/food-provider';
 import { useFonts } from "expo-font";
@@ -18,9 +19,9 @@ const RootNavigator = () => {
     <Stack.Screen name="(auth)" />
     <Stack.Screen name="auth-callback" />
     <Stack.Protected guard={!session}><Stack.Screen name="onboarding" /></Stack.Protected>
-    <Stack.Protected guard={!!session}><Stack.Screen name="home" /><Stack.Screen name="search" /><Stack.Screen name="food-category" /><Stack.Screen name="food-details" /><Stack.Screen name="restaurant-details" /><Stack.Screen name="cart" /></Stack.Protected>
+    <Stack.Protected guard={!!session}><Stack.Screen name="home" /><Stack.Screen name="search" /><Stack.Screen name="food-category" /><Stack.Screen name="food-details" /><Stack.Screen name="restaurant-details" /><Stack.Screen name="cart" /><Stack.Screen name="payment" /><Stack.Screen name="add-card" /><Stack.Screen name="payment-success" /><Stack.Screen name="order-tracking" /></Stack.Protected>
   </Stack>;
 };
 
-const RootLayout = () => <AuthProvider><FoodProvider><RootNavigator /></FoodProvider></AuthProvider>;
+const RootLayout = () => <AuthProvider><FoodProvider><PaymentProvider><RootNavigator /></PaymentProvider></FoodProvider></AuthProvider>;
 export default RootLayout;
