@@ -2,18 +2,27 @@ import { Colors, Fonts } from "@/constants/theme";
 import { dishes, restaurants } from "@/data/catalog";
 import { clearRecentSearches, getRecentSearches, matchesSearch as matches, rememberSearch } from "@/lib/search";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
 import { Image, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const suggestedKeywords = ["Burger", "Sandwich", "Hot Dog", "Salad"];
+const suggestedKeywords = ["Burger", "Sandwich", "Hot Dog", "Pizza", "Salad", "Desserts"];
 
 export default function SearchScreen() {
-  const [query, setQuery] = useState("");
+  const { q, focus } = useLocalSearchParams<{ q?: string; focus?: string }>();
+  const [query, setQuery] = useState(q ?? "");
   const [recent, setRecent] = useState(getRecentSearches);
   const [selected, setSelected] = useState<(typeof restaurants)[number] | null>(null);
   const input = useRef<TextInput>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const suggestions = [...new Set([...recent, ...suggestedKeywords, ...dishes.map(dish => dish.name), ...restaurants.map(restaurant => restaurant.name)])].filter(value => matches(query, value)).slice(0, 5);
+  const chooseSuggestion = (value: string) => {
+    setQuery(value);
+    setRecent(rememberSearch(value));
+    setSearchFocused(false);
+    Keyboard.dismiss();
+  };
   const restaurantResults = restaurants.filter(restaurant => matches(query, `${restaurant.name} ${restaurant.categories} ${dishes.filter(dish => dish.restaurantId === restaurant.id).map(dish => `${dish.name} ${dish.keywords}`).join(" ")}`));
   const foodResults = dishes.filter(dish => matches(query, `${dish.name} ${dish.keywords} ${restaurants.find(restaurant => restaurant.id === dish.restaurantId)?.name ?? ""}`));
   const keywords = [...recent, ...suggestedKeywords.filter(keyword => !recent.some(value => value.toLowerCase() === keyword.toLowerCase()))];
@@ -39,10 +48,14 @@ export default function SearchScreen() {
       </View>
       <View style={styles.searchBox}>
         <Ionicons name="search-outline" size={21} color={Colors.imagePlaceholder} />
-        <TextInput ref={input} value={query} onChangeText={setQuery} placeholder="Search dishes, restaurants" placeholderTextColor={Colors.textSecondary} style={styles.input} accessibilityLabel="Search dishes and restaurants" autoCapitalize="none" autoCorrect={false} maxLength={60} returnKeyType="search" onSubmitEditing={() => { remember(); Keyboard.dismiss(); }} />
+        <TextInput autoFocus={focus === "true"} ref={input} value={query} onChangeText={setQuery} onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)} placeholder="Search dishes, restaurants" placeholderTextColor={Colors.textSecondary} style={styles.input} accessibilityLabel="Search dishes and restaurants" autoCapitalize="none" autoCorrect={false} maxLength={60} returnKeyType="search" onSubmitEditing={() => { remember(); Keyboard.dismiss(); }} />
         {!!query && <Pressable accessibilityRole="button" accessibilityLabel="Clear search" hitSlop={10} onPress={() => { setQuery(""); input.current?.focus(); }}><Ionicons name="close-circle" size={22} color={Colors.imagePlaceholder} /></Pressable>}
       </View>
       <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+        {searchFocused && !!query.trim() && <View style={styles.suggestions}>
+          {suggestions.map(value => <Pressable key={value} accessibilityRole="button" accessibilityLabel={`Search for ${value}`} onPress={() => chooseSuggestion(value)} style={styles.suggestion}><Ionicons name="search-outline" size={18} color={Colors.imagePlaceholder} /><Text style={styles.suggestionText}>{value}</Text><Ionicons name="arrow-up-outline" size={16} color={Colors.imagePlaceholder} /></Pressable>)}
+          <Pressable accessibilityRole="button" onPress={() => chooseSuggestion(query.trim())} style={styles.suggestion}><Text style={[styles.suggestionText, { color: Colors.primary }]}>See all results for ?{query.trim()}?</Text><Ionicons name="chevron-forward" size={16} color={Colors.primary} /></Pressable>
+        </View>}
         <View style={styles.sectionHeading}>
           <Text style={styles.heading}>{recent.length ? "Recent Keywords" : "Popular Keywords"}</Text>
           {!!recent.length && <Pressable accessibilityRole="button" onPress={() => setRecent(clearRecentSearches())} hitSlop={8}><Text style={styles.clear}>Clear history</Text></Pressable>}
@@ -93,6 +106,9 @@ const styles = StyleSheet.create({
   searchBox: { marginHorizontal: 24, paddingHorizontal: 18, minHeight: 64, borderRadius: 12, backgroundColor: Colors.surface, flexDirection: "row", alignItems: "center", gap: 10 },
   input: { flex: 1, paddingVertical: 18, fontFamily: Fonts.regular, fontSize: 14, color: Colors.text },
   content: { paddingHorizontal: 24, paddingTop: 26, paddingBottom: 32 },
+  suggestions: { borderWidth: 1, borderColor: Colors.border, borderRadius: 12, marginBottom: 24, overflow: "hidden" },
+  suggestion: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 14 },
+  suggestionText: { flex: 1, fontFamily: Fonts.regular, fontSize: 14, color: Colors.text },
   sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
   heading: { fontFamily: Fonts.regular, fontSize: 20, color: Colors.darkBackground, marginBottom: 16 },
   clear: { fontFamily: Fonts.medium, fontSize: 12, color: Colors.primary, marginBottom: 16 },

@@ -93,18 +93,10 @@ export default function HomeScreen() {
           {/* Search */}
 
           <View style={styles.stickySearch}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Search dishes and restaurants"
-            onPress={() => router.push("/search")}
-            style={styles.searchContainer}
-          >
-            <Feather name="search" size={20} color={Colors.imagePlaceholder} />
-
-            <Text style={[styles.searchInput, { color: Colors.textSecondary }]}>
-              Search dishes, restaurants
-            </Text>
-          </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Search dishes and restaurants" onPress={() => router.push({ pathname: "/search", params: { focus: "true" } })} style={styles.searchContainer}>
+              <Feather name="search" size={20} color={Colors.imagePlaceholder} />
+              <Text style={[styles.searchInput, { color: Colors.textSecondary }]}>Search dishes, restaurants</Text>
+            </Pressable>
           </View>
 
           {/* Categories */}
@@ -369,6 +361,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
   },
+
 
   // Section
 
