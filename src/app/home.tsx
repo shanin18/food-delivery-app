@@ -237,9 +237,9 @@ export default function HomeScreen() {
             <FontAwesome6 name="receipt" size={22} color={Colors.textSecondary} />
             <Text style={styles.tabText}>Orders</Text>
           </Pressable>
-          <Pressable style={styles.tab}><FontAwesome6 name="heart" size={22} color={Colors.textSecondary} /><Text style={styles.tabText}>Favorites</Text></Pressable>
+          <Pressable accessibilityRole="button" onPress={() => router.push("/favorites")} style={styles.tab}><FontAwesome6 name="heart" size={22} color={Colors.textSecondary} /><Text style={styles.tabText}>Favorites</Text></Pressable>
 
-          <Pressable style={styles.tab}>
+          <Pressable accessibilityRole="button" onPress={() => router.push("/profile")} style={styles.tab}>
             <Ionicons
               name="person-outline"
               size={24}

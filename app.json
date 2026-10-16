@@ -15,6 +15,14 @@
         {
           "locationWhenInUsePermission": "Allow Food Delivery to use your location to set your delivery address."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a photo for your Food Delivery profile.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
       ]
     ],
     "experiments": {

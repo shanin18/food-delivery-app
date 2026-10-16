@@ -28,7 +28,7 @@ export function useSavedAddress() {
   const setAddress = async (value: string) => {
     if (!userId) throw new Error('Sign in before saving your address.');
     const address = value.trim();
-    if (!address || address.length > 300) throw new Error('Enter a delivery address of up to 300 characters.');
+    if (address.length > 300) throw new Error('Enter a delivery address of up to 300 characters.');
     const key = `delivery-address.${userId}`;
     try {
       if (Platform.OS === 'web') window.localStorage.setItem(key, address);
