@@ -1,3 +1,4 @@
+import { getRestaurantAccount } from "@/lib/restaurant-account";
 import { Colors } from "@/constants/theme";
 import { useAuth } from '@/providers/auth-provider';
 import { router } from "expo-router";
@@ -19,7 +20,8 @@ const HomeScreen = () => {
     }, 1000);
 
     const navigationTimer = setTimeout(() => {
-      router.replace(session ? '/home' : '/onboarding');
+      if (!session) { router.replace('/onboarding'); return; }
+      void getRestaurantAccount().then(account => router.replace(account ? '/restaurant/dashboard' : '/home')).catch(() => router.replace('/home'));
     }, 2500);
 
     return () => {

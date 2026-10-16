@@ -82,6 +82,7 @@ const LoginScreen = () => {
           ========================== */}
 
           <View style={styles.formContainer}>
+            <Pressable accessibilityRole="button" onPress={() => router.push("/owner-login")} style={{alignSelf:"flex-end",paddingVertical:12}}><Text style={{color:Colors.primary,fontFamily:Fonts.medium,fontSize:12}}>Restaurant owner? Sign in</Text></Pressable>
             <AuthFeedback error={error} />
             {/* Email */}
 

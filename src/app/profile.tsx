@@ -8,7 +8,7 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 type MenuItem = { title: string; icon: keyof typeof Ionicons.glyphMap; color: string; route: Href };
 const groups: MenuItem[][] = [
-  [{ title: 'Restaurant Dashboard', icon: 'grid-outline', color: Colors.primary, route: '/restaurant/dashboard' }, { title: 'Personal Info', icon: 'person-outline', color: Colors.primary, route: '/personal-info' }, { title: 'Addresses', icon: 'map-outline', color: '#856BFF', route: '/addresses' }],
+  [{ title: 'Personal Info', icon: 'person-outline', color: Colors.primary, route: '/personal-info' }, { title: 'Addresses', icon: 'map-outline', color: '#856BFF', route: '/addresses' }],
   [{ title: 'My Orders', icon: 'receipt-outline', color: '#2699FF', route: '/my-orders' }, { title: 'Cart', icon: 'bag-handle-outline', color: '#2699FF', route: '/cart' }, { title: 'Favourite', icon: 'heart-outline', color: '#B765ED', route: '/favorites' }, { title: 'Notifications', icon: 'notifications-outline', color: '#F4AE2A', route: { pathname: '/profile-section', params: { section: 'notifications' } } }, { title: 'Payment Method', icon: 'card-outline', color: '#2699FF', route: '/payment' }],
   [{ title: 'FAQs', icon: 'help-circle-outline', color: Colors.primary, route: { pathname: '/profile-section', params: { section: 'faq' } } }, { title: 'User Reviews', icon: 'star-outline', color: '#28C5CD', route: { pathname: '/profile-section', params: { section: 'reviews' } } }, { title: 'Settings', icon: 'settings-outline', color: '#7C6EEB', route: { pathname: '/profile-section', params: { section: 'settings' } } }],
 ];
