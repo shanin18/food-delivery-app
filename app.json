@@ -10,11 +10,19 @@
       "expo-router",
       "expo-font",
       "expo-secure-store",
-      ["expo-location", { "locationWhenInUsePermission": "Allow Food Delivery to use your location to set your delivery address." }]
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Food Delivery to use your location to set your delivery address."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "android": {
+      "softwareKeyboardLayoutMode": "resize"
     }
   }
 }

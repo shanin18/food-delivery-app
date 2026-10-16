@@ -1,8 +1,9 @@
+import { dishes } from "@/data/catalog";
 import { createContext, useContext, useRef, useState, type ReactNode } from 'react';
 import { type DemoCard, type PaymentMethod } from '@/lib/payment';
 import { useFood } from '@/providers/food-provider';
 
-type DemoOrder = { id: string; total: number; address: string; method: PaymentMethod; quantity: number; createdAt: string };
+type DemoOrder = { id: string; total: number; address: string; method: PaymentMethod; quantity: number; createdAt: string; items: { dishId: string; name: string; quantity: number; restaurantId: number }[] };
 const Context = createContext<{
   cards: DemoCard[]; selectedCard: string | null; method: PaymentMethod; order: DemoOrder | null;
   setMethod: (method: PaymentMethod) => void; selectCard: (id: string) => void;
@@ -29,7 +30,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     if ((paymentMethod === 'Visa' || paymentMethod === 'Mastercard') && !card && !cards.some(item => item.id === selectedCard && item.brand === paymentMethod)) throw new Error('Add or select a card first.');
     confirming.current = true;
     try {
-      setOrder({ id: `FD-${Date.now()}`, total: items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0), quantity: items.reduce((sum, item) => sum + item.quantity, 0), address: address.trim(), method: paymentMethod, createdAt: new Date().toISOString() });
+      setOrder({ id: `FD-${Date.now()}`, total: items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0), quantity: items.reduce((sum, item) => sum + item.quantity, 0), address: address.trim(), method: paymentMethod, createdAt: new Date().toISOString(), items: items.map(item => { const dish = dishes.find(value => value.id === item.dishId); return { dishId: item.dishId, name: dish?.name ?? "Food", quantity: item.quantity, restaurantId: dish?.restaurantId ?? 1 }; }) });
       clearCart();
     } finally { confirming.current = false; }
   };
