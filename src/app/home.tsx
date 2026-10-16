@@ -222,7 +222,7 @@ export default function HomeScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Search"
-            onPress={() => router.push("/search")}
+            onPress={() => router.push({ pathname: "/search", params: { focus: "true" } })}
             style={styles.tab}
           >
             <Ionicons
@@ -233,10 +233,11 @@ export default function HomeScreen() {
             <Text style={styles.tabText}>Search</Text>
           </Pressable>
 
-          <Pressable style={styles.tab}>
-            <FontAwesome6 name="heart" size={22} color={Colors.textSecondary} />
-            <Text style={styles.tabText}>Favorites</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="My Orders" onPress={() => router.push("/my-orders")} style={styles.tab}>
+            <FontAwesome6 name="receipt" size={22} color={Colors.textSecondary} />
+            <Text style={styles.tabText}>Orders</Text>
           </Pressable>
+          <Pressable style={styles.tab}><FontAwesome6 name="heart" size={22} color={Colors.textSecondary} /><Text style={styles.tabText}>Favorites</Text></Pressable>
 
           <Pressable style={styles.tab}>
             <Ionicons

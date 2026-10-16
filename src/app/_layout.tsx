@@ -19,7 +19,7 @@ const RootNavigator = () => {
     <Stack.Screen name="(auth)" />
     <Stack.Screen name="auth-callback" />
     <Stack.Protected guard={!session}><Stack.Screen name="onboarding" /></Stack.Protected>
-    <Stack.Protected guard={!!session}><Stack.Screen name="home" /><Stack.Screen name="search" /><Stack.Screen name="food-category" /><Stack.Screen name="food-details" /><Stack.Screen name="restaurant-details" /><Stack.Screen name="cart" /><Stack.Screen name="payment" /><Stack.Screen name="add-card" /><Stack.Screen name="payment-success" /><Stack.Screen name="order-tracking" /><Stack.Screen name="courier-call" /><Stack.Screen name="courier-message" /></Stack.Protected>
+    <Stack.Protected guard={!!session}><Stack.Screen name="home" /><Stack.Screen name="search" /><Stack.Screen name="food-category" /><Stack.Screen name="food-details" /><Stack.Screen name="restaurant-details" /><Stack.Screen name="cart" /><Stack.Screen name="payment" /><Stack.Screen name="add-card" /><Stack.Screen name="payment-success" /><Stack.Screen name="order-tracking" /><Stack.Screen name="my-orders" /><Stack.Screen name="courier-call" /><Stack.Screen name="courier-message" /></Stack.Protected>
   </Stack>;
 };
 

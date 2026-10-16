@@ -4,14 +4,16 @@ import { Colors, Fonts } from '@/constants/theme';
 import { dishes, restaurants } from '@/data/catalog';
 import { usePayment } from '@/providers/payment-provider';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Alert, Animated, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const steps = ['Your order has been received', 'The restaurant is preparing your food', 'Your order has been picked up for delivery', 'Order arriving soon!'];
 export default function OrderTrackingScreen() {
-  const { order } = usePayment();
+  const { orderId } = useLocalSearchParams<{ orderId?: string }>();
+  const { order: latestOrder, orders, complete } = usePayment();
+  const order = orderId ? orders.find(value => value.id === orderId) ?? null : latestOrder;
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const available = height - insets.top - insets.bottom;
@@ -49,11 +51,12 @@ export default function OrderTrackingScreen() {
           <View style={styles.summary}>{(food?.image || restaurant?.image) && <Image source={food?.image ?? restaurant!.image} style={styles.photo} resizeMode={food?.image ? 'contain' : 'cover'} />}<View style={styles.details}><Text style={styles.title}>{restaurant?.name ?? 'Your order'}</Text>{order ? <><Text style={styles.date}>Ordered at {new Date(order.createdAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit' })}</Text><Text numberOfLines={2} style={styles.item}>{order.items.map(item => `${item.quantity}x ${item.name}`).join('\n')}</Text></> : <Text style={styles.date}>Place an order to see its details.</Text>}</View></View>
         </View>
         <ScrollView style={styles.stepsScroll} scrollEnabled={expanded} showsVerticalScrollIndicator={false} onScroll={event => { scrollOffset.current = event.nativeEvent.contentOffset.y; }} scrollEventThrottle={16} onScrollEndDrag={event => { if (scrollOffset.current < -35) setExpanded(false); }} contentContainerStyle={styles.stepsContent}>
-          <Text style={styles.eta}>20 min</Text><Text style={styles.etaLabel}>ESTIMATED DELIVERY TIME · PREVIEW</Text>
+          <Text style={styles.eta}>{order?.status === "completed" ? "Delivered" : order?.status === "cancelled" ? "Cancelled" : "20 min"}</Text><Text style={styles.etaLabel}>ESTIMATED DELIVERY TIME · PREVIEW</Text>
           {steps.map((step, index) => <View key={step} style={styles.step}><View style={styles.rail}>{index < steps.length - 1 && <View style={[styles.line, index === 0 && { backgroundColor: Colors.primary }]} />}<View style={styles.stepIcon}><Ionicons name={index === 0 ? 'checkmark-circle' : index === 1 ? 'restaurant-outline' : 'checkmark-circle'} size={18} color={index < 2 ? Colors.primary : '#C3C7CD'} /></View></View><Text style={[styles.stepText, index === 0 && { color: Colors.primary }]}>{step}</Text></View>)}
           <Text style={styles.preview}>Route preview · Live tracking unavailable</Text>
+          {order?.status === 'ongoing' && <Pressable accessibilityRole="button" onPress={() => Alert.alert('Received your food?', 'Confirm only after your order arrives.', [{ text: 'Not yet', style: 'cancel' }, { text: 'Confirm received', onPress: () => { complete(order.id); router.replace('/my-orders'); } }])} style={{ paddingVertical: 14 }}><Text style={{ fontFamily: Fonts.medium, fontSize: 13, color: Colors.primary }}>Confirm order received</Text></Pressable>}
         </ScrollView>
-        <View style={styles.contact}><Image source={sampleCourier.image} style={styles.avatar} /><View style={styles.details}><Text style={styles.title}>{sampleCourier.name}</Text><Text style={styles.role}>{sampleCourier.role}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Call courier" onPress={() => router.push('/courier-call')} style={styles.call}><Ionicons name="call-outline" size={20} color={Colors.white} /></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Message courier" onPress={() => router.push('/courier-message')} style={styles.message}><FontAwesome5 name="facebook-messenger" size={21} color={Colors.primary} /></Pressable></View>
+        <View style={styles.contact}><Image source={sampleCourier.image} style={styles.avatar} /><View style={styles.details}><Text style={styles.title}>{sampleCourier.name}</Text><Text style={styles.role}>{sampleCourier.role}</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Call courier" onPress={() => router.push('/courier-call')} style={styles.call}><Ionicons name="call-outline" size={20} color={Colors.white} /></Pressable><Pressable accessibilityRole="button" accessibilityLabel="Message courier" onPress={() => router.push({ pathname: '/courier-message', params: { orderId: order?.id } })} style={styles.message}><FontAwesome5 name="facebook-messenger" size={21} color={Colors.primary} /></Pressable></View>
       </Animated.View>
     </View>
   </SafeAreaView>;

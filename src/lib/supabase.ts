@@ -48,3 +48,5 @@ export function getSupabase() {
   if (!supabase) throw new Error('Sign-in is unavailable. Please configure the Supabase project URL and public key.');
   return supabase;
 }
+
+export { storage as deviceStorage };

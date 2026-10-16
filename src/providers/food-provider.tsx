@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useSavedAddress } from '@/hooks/use-saved-address';
 
 type CartItem = { dishId: string; size: string; quantity: number; unitPrice: number };
 const FoodContext = createContext<{
@@ -6,14 +7,15 @@ const FoodContext = createContext<{
   addItem: (item: CartItem) => void; toggleFavorite: (id: string) => void;
   updateQuantity: (dishId: string, size: string, quantity: number) => void;
   removeItem: (dishId: string, size: string) => void;
-  address: string; setAddress: (value: string) => void;
+  address: string; setAddress: (value: string) => Promise<void>;
+  addressLoading: boolean; addressStorageError: string | null;
   clearCart: () => void;
 } | null>(null);
 
 export function FoodProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [address, setAddress] = useState('');
+  const { address, setAddress, addressLoading, addressStorageError } = useSavedAddress();
   const updateQuantity = (dishId: string, size: string, quantity: number) => setItems(current => current.map(item => item.dishId === dishId && item.size === size ? { ...item, quantity: Math.max(1, Math.min(99, quantity)) } : item));
   const removeItem = (dishId: string, size: string) => setItems(current => current.filter(item => item.dishId !== dishId || item.size !== size));
   const addItem = (item: CartItem) => setItems(current => {
@@ -21,7 +23,7 @@ export function FoodProvider({ children }: { children: ReactNode }) {
     return existing ? current.map(value => value === existing ? { ...value, quantity: value.quantity + item.quantity } : value) : [...current, item];
   });
   const toggleFavorite = (id: string) => setFavorites(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id]);
-  return <FoodContext.Provider value={{ items, favorites, addItem, toggleFavorite, updateQuantity, removeItem, address, setAddress, clearCart: () => setItems([]) }}>{children}</FoodContext.Provider>;
+  return <FoodContext.Provider value={{ items, favorites, addItem, toggleFavorite, updateQuantity, removeItem, address, setAddress, addressLoading, addressStorageError, clearCart: () => setItems([]) }}>{children}</FoodContext.Provider>;
 }
 
 export function useFood() {

@@ -8,7 +8,8 @@ import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleShee
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CartScreen() {
-  const { items, updateQuantity, removeItem, address, setAddress } = useFood();
+  const { items, updateQuantity, removeItem, address, setAddress, addressLoading, addressStorageError } = useFood();
+  const [savingAddress, setSavingAddress] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editingAddress, setEditingAddress] = useState(false);
   const [draftAddress, setDraftAddress] = useState(address);
@@ -18,6 +19,7 @@ export default function CartScreen() {
   const money = (value: number) => `$${value.toFixed(2).replace(/\.00$/, '')}`;
   const back = () => router.canGoBack() ? router.back() : router.replace('/home');
   const placeOrder = () => {
+    if (addressLoading || savingAddress) return;
     if (!address.trim() || editingAddress) {
       setAddressError('Please enter and save your delivery address before placing your order.');
       if (!editingAddress) setDraftAddress(address);
@@ -43,12 +45,12 @@ export default function CartScreen() {
         {!items.length && <View style={styles.empty}><Ionicons name="bag-handle-outline" size={60} color={Colors.primary} /><Text style={styles.emptyTitle}>Your cart is empty</Text><Text style={styles.emptyText}>Find something delicious to get started.</Text><Pressable accessibilityRole="button" onPress={() => router.push('/food-category')} style={styles.order}><Text style={styles.orderText}>BROWSE FOOD</Text></Pressable></View>}
       </ScrollView>
       {!!items.length && <View style={styles.checkout}>
-        <View style={styles.addressHeader}><Text style={styles.label}>DELIVERY ADDRESS</Text><Pressable accessibilityRole="button" onPress={() => { if (editingAddress) { if (draftAddress.trim()) { setAddress(draftAddress.trim()); setEditingAddress(false); setAddressError(null); } else { setAddressError("Please enter your delivery address."); } } else { setDraftAddress(address); setEditingAddress(true); } }} hitSlop={10}><Text style={styles.edit}>{editingAddress ? 'SAVE' : 'EDIT'}</Text></Pressable></View>
-        {editingAddress ? <TextInput accessibilityLabel="Delivery address" autoFocus multiline value={draftAddress} onChangeText={setDraftAddress} placeholder="Enter your full delivery address" maxLength={300} style={[styles.addressInput, addressError && styles.addressInvalid]} /> : <Pressable accessibilityRole="button" accessibilityLabel="Edit delivery address" onPress={() => { setDraftAddress(address); setEditingAddress(true); }} style={styles.addressBox}><Text style={styles.addressText}>{address || 'Add your delivery address'}</Text></Pressable>}
-        {addressError && <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={styles.addressError}>{addressError}</Text>}
+        <View style={styles.addressHeader}><Text style={styles.label}>DELIVERY ADDRESS</Text><Pressable accessibilityRole="button" disabled={savingAddress || addressLoading} onPress={async () => { if (editingAddress) { setSavingAddress(true); try { await setAddress(draftAddress); setEditingAddress(false); setAddressError(null); } catch (cause) { setAddressError(cause instanceof Error ? cause.message : 'Could not save your address.'); } finally { setSavingAddress(false); } } else { setDraftAddress(address); setEditingAddress(true); } }} hitSlop={10}><Text style={styles.edit}>{savingAddress ? 'SAVING?' : editingAddress ? 'SAVE' : 'EDIT'}</Text></Pressable></View>
+        {editingAddress ? <TextInput accessibilityLabel="Delivery address" autoFocus multiline value={draftAddress} onChangeText={setDraftAddress} placeholder="Enter your full delivery address" maxLength={300} style={[styles.addressInput, addressError && styles.addressInvalid]} /> : <Pressable accessibilityRole="button" accessibilityLabel="Edit delivery address" onPress={() => { setDraftAddress(address); setEditingAddress(true); }} style={styles.addressBox}><Text style={styles.addressText}>{addressLoading ? 'Loading saved address?' : address || 'Add your delivery address'}</Text></Pressable>}
+        {(addressError || addressStorageError) && <Text accessibilityRole="alert" accessibilityLiveRegion="assertive" style={styles.addressError}>{addressError || addressStorageError}</Text>}
         <View style={styles.totalRow}><Text style={styles.label}>TOTAL:</Text><Text style={styles.total}>{money(total)}</Text><View style={{ flex: 1 }} /><Pressable accessibilityRole="button" accessibilityState={{ expanded: breakdown }} onPress={() => setBreakdown(value => !value)} style={styles.breakdownButton}><Text style={styles.breakdownText}>Breakdown</Text><Ionicons name={breakdown ? 'chevron-up' : 'chevron-forward'} size={14} color={Colors.textSecondary} /></Pressable></View>
         {breakdown && <View style={styles.breakdown}><View style={styles.breakdownRow}><Text style={styles.addressText}>Food subtotal</Text><Text style={styles.addressText}>{money(total)}</Text></View><Text style={styles.emptyText}>Delivery fees and taxes will be calculated at checkout.</Text></View>}
-        <Pressable accessibilityRole="button" onPress={placeOrder} style={styles.order}><Text style={styles.orderText}>PLACE ORDER</Text></Pressable>
+        <Pressable accessibilityRole="button" disabled={addressLoading || savingAddress} onPress={placeOrder} style={styles.order}><Text style={styles.orderText}>PLACE ORDER</Text></Pressable>
       </View>}
     </KeyboardAvoidingView>
   </SafeAreaView>;

@@ -1,0 +1,20 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const ts = require('typescript');
+const exported = {};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/lib/orders.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports: exported });
+test('cancelling targets only the selected ongoing order and preserves its snapshot', () => {
+  const first = { id: 'first', status: 'ongoing', total: 80, items: [{ dishId: 'burger', quantity: 2, size: 'M', unitPrice: 40 }] };
+  const second = { id: 'second', status: 'ongoing' };
+  const completed = { id: 'completed', status: 'completed' };
+  const input = [first, second, completed];
+  const result = exported.cancelOrder(input, 'first');
+  assert.equal(result[0].status, 'cancelled');
+  assert.equal(result[0].items, first.items);
+  assert.equal(result[0].total, 80);
+  assert.equal(result[1], second);
+  assert.equal(first.status, 'ongoing');
+  assert.equal(exported.cancelOrder(input, 'completed')[2], completed);
+});
