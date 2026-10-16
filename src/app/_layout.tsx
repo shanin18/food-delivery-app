@@ -1,4 +1,3 @@
-import { useReducedMotion } from 'react-native-reanimated';
 import { DialogProvider } from '@/providers/dialog-provider';
 import { AddressProvider } from "@/providers/address-provider";
 import { PaymentProvider } from "@/providers/payment-provider";
@@ -10,7 +9,6 @@ import { AuthProvider, useAuth } from '@/providers/auth-provider';
 import { ActivityIndicator, View } from 'react-native';
 
 const RootNavigator = () => {
-  const reducedMotion = useReducedMotion();
   const [fontsLoaded] = useFonts(FontAssets);
   const { session, loading } = useAuth();
 
@@ -18,7 +16,7 @@ const RootNavigator = () => {
     return <View style={{ flex: 1, justifyContent: 'center' }}><ActivityIndicator /></View>;
   }
 
-  return <Stack screenOptions={{ headerShown: false, animation: reducedMotion ? 'none' : 'slide_from_right', animationDuration: 240 }}>
+  return <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
     <Stack.Screen name="index" />
     <Stack.Screen name="(auth)" />
     <Stack.Screen name="auth-callback" /><Stack.Screen name="owner-login" />

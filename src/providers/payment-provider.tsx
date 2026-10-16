@@ -1,3 +1,4 @@
+import { useAuth } from '@/providers/auth-provider';
 import { useOrderHistory } from "@/hooks/use-order-history";
 import { cancelOrder, type Order } from "@/lib/orders";
 import { dishes } from "@/data/catalog";
@@ -12,10 +13,14 @@ const Context = createContext<{
 } | null>(null);
 
 export function PaymentProvider({ children }: { children: ReactNode }) {
+  const { session } = useAuth();
+  const account = session?.user.id ?? null;
+  const [owner, setOwner] = useState(account);
   const { items, address, clearCart } = useFood();
   const [cards, setCards] = useState<DemoCard[]>([]);
   const [selectedCard, selectCard] = useState<string | null>(null);
   const [method, setMethod] = useState<PaymentMethod>('Mastercard');
+  if (owner !== account) { setOwner(account); setCards([]); selectCard(null); setMethod('Mastercard'); }
   const { orders, setOrders, ordersLoading, storageError } = useOrderHistory();
   const order = orders[0] ?? null;
   const cancel = (id: string) => setOrders(current => cancelOrder(current, id));

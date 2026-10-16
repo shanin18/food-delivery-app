@@ -3,7 +3,7 @@ import { Colors } from "@/constants/theme";
 import { useAuth } from '@/providers/auth-provider';
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Animated, Image, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Animated, Image, StyleSheet, View } from "react-native";
 
 const HomeScreen = () => {
   const { session } = useAuth();
@@ -19,14 +19,16 @@ const HomeScreen = () => {
       }).start();
     }, 1000);
 
-    const navigationTimer = setTimeout(() => {
+    let active = true;
+    const navigate = () => {
       if (!session) { router.replace('/onboarding'); return; }
-      void getRestaurantAccount().then(account => router.replace(account ? '/restaurant/dashboard' : '/home')).catch(() => router.replace('/home'));
-    }, 2500);
+      void getRestaurantAccount().then(account => { if (active) router.replace(account ? '/restaurant/dashboard' : '/home'); }).catch(() => { if (active) router.replace('/home'); });
+    };
+    navigate();
 
     return () => {
       clearTimeout(decorationTimer);
-      clearTimeout(navigationTimer);
+      active = false;
     };
   }, [decorationAnimation, session]);
 
@@ -38,6 +40,7 @@ const HomeScreen = () => {
         resizeMode="contain"
       />
 
+      <ActivityIndicator color={Colors.primary} style={{ marginTop: 24 }} accessibilityLabel="Loading your account" />
       <Animated.Image
         source={require("../../assets/images/splash-decoration.png")}
         resizeMode="contain"

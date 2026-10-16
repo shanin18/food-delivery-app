@@ -27,6 +27,9 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+// Session-only cache of successful lookups; never stores apartment details.
+const addressLookups = new Map<string, { expires: number; value: ReturnType<typeof parseGeocodedAddress> }>();
+
 export default function AddAddressScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { addresses, save, loading } = useAddresses();
@@ -147,6 +150,9 @@ function AddressForm({
         lastRequest.current = Date.now();
         try {
           const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${selection.latitude}&lon=${selection.longitude}`;
+          const cached = addressLookups.get(url);
+          let result = cached && cached.expires > Date.now() ? cached.value : undefined;
+          if (!result) {
           const response = await fetch(url, {
             signal: controller.signal,
             headers: {
@@ -159,8 +165,11 @@ function AddressForm({
             },
           });
           if (!response.ok) throw new Error();
-          const result = parseGeocodedAddress(await response.json());
+          result = parseGeocodedAddress(await response.json());
           if (!result.address) throw new Error();
+          if (addressLookups.size >= 50) addressLookups.delete(addressLookups.keys().next().value!);
+          addressLookups.set(url, { value: result, expires: Date.now() + 10 * 60 * 1000 });
+          }
           if (active) {
             setAddress(result.address.slice(0, 260));
             setStreet(result.street);

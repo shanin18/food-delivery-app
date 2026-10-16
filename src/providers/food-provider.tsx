@@ -1,3 +1,4 @@
+import { useAuth } from '@/providers/auth-provider';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { useSavedAddress } from '@/hooks/use-saved-address';
 
@@ -13,8 +14,13 @@ const FoodContext = createContext<{
 } | null>(null);
 
 export function FoodProvider({ children }: { children: ReactNode }) {
+  const { session } = useAuth();
+  const account = session?.user.id ?? null;
+  const [owner, setOwner] = useState(account);
   const [items, setItems] = useState<CartItem[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
+  // A guarded render reset prevents a previous account's data reaching children.
+  if (owner !== account) { setOwner(account); setItems([]); setFavorites([]); }
   const { address, setAddress, addressLoading, addressStorageError } = useSavedAddress();
   const updateQuantity = (dishId: string, size: string, quantity: number) => setItems(current => current.map(item => item.dishId === dishId && item.size === size ? { ...item, quantity: Math.max(1, Math.min(99, quantity)) } : item));
   const removeItem = (dishId: string, size: string) => setItems(current => current.filter(item => item.dishId !== dishId || item.size !== size));
