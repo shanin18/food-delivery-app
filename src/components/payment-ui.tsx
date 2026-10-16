@@ -1,7 +1,8 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import type { PaymentMethod } from '@/lib/payment';
 
 export function PaymentHeader({ title, close = false }: { title: string; close?: boolean }) {

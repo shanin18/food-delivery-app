@@ -1,8 +1,9 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { paymentStyles as shared } from '@/components/payment-ui';
 import { Colors, Fonts } from '@/constants/theme';
 import { usePayment } from '@/providers/payment-provider';
 import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PaymentSuccessScreen() {

@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { RestaurantFilter } from "@/components/restaurant-filter";
 import { emptyFoodFilters, matchesFoodFilters } from "@/lib/food-filters";
 import { FoodCard } from '@/components/food-card';
@@ -6,7 +7,7 @@ import { dishes, restaurants } from '@/data/catalog';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RestaurantDetailsScreen() {

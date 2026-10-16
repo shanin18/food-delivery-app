@@ -1,9 +1,10 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { AuthFeedback } from "@/components/auth-feedback";
 import { completeAuthUrl } from "@/lib/auth";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 
 export default function AuthCallbackScreen() {
   const linkingUrl = Linking.useLinkingURL();

@@ -1,7 +1,8 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { trackingHtml } from '@/lib/tracking-map';
 import { Colors } from '@/constants/theme';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 export default function TrackingMap() {

@@ -1,8 +1,9 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from '@/constants/theme';
 import type { Dish } from '@/data/catalog';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 export function FoodCard({ dish, showPrice = false }: { dish: Dish; showPrice?: boolean }) {
   const open = () => router.push({ pathname: '/food-details', params: { id: dish.id } });

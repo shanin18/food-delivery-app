@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { ButtonContent } from "@/components/button-content";
 import { AuthFeedback } from '@/components/auth-feedback';
 import { Colors, Fonts } from '@/constants/theme';
@@ -6,7 +7,7 @@ import { validatePassword } from '@/lib/auth';
 import { getSupabase } from '@/lib/supabase';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ResetPasswordScreen() {

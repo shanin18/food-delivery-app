@@ -1,7 +1,8 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors } from "@/constants/theme";
 import { locationMapUrl, type Coordinates } from "@/lib/location-map";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 
 type LocationMapProps = {

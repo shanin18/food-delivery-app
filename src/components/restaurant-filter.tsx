@@ -1,8 +1,9 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from '@/constants/theme';
 import { emptyFoodFilters, type FoodFilters } from '@/lib/food-filters';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function RestaurantFilter({ initial, onClose, onApply }: { initial: FoodFilters; onClose: () => void; onApply: (value: FoodFilters) => void }) {

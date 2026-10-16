@@ -1,10 +1,11 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from '@/constants/theme';
 import { dishes, restaurants } from '@/data/catalog';
 import { useFood } from '@/providers/food-provider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CartScreen() {

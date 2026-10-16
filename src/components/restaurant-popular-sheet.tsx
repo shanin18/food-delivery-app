@@ -1,9 +1,10 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from '@/constants/theme';
 import { useRestaurant } from '@/providers/restaurant-provider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Animated, Image, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Image, Modal, PanResponder, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function RestaurantPopularSheet({ onClose }: { onClose: () => void }) {
@@ -29,7 +30,7 @@ export function RestaurantPopularSheet({ onClose }: { onClose: () => void }) {
           <View style={styles.heading}><Text style={styles.title}>Popular Items This Week</Text><Pressable onPress={dismiss} accessibilityRole="button" accessibilityLabel="Close" hitSlop={12}><Ionicons name="close" size={22} color={Colors.textSecondary} /></Pressable></View>
         </View>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          {menu.map(item => <Pressable key={item.id} accessibilityRole="button" onPress={() => { onClose(); router.push({ pathname: '/restaurant/food-view', params: { id: item.id } }); }} style={styles.row}>
+          {menu.map(item => <Pressable feedback="row" key={item.id} accessibilityRole="button" onPress={() => { onClose(); router.push({ pathname: '/restaurant/food-view', params: { id: item.id } }); }} style={styles.row}>
             <Image source={item.image} style={styles.image} resizeMode="contain" />
             <View style={styles.info}><Text style={styles.category}>{item.category}</Text><Text style={styles.name}>{item.name}</Text><Text style={styles.price}>${item.price.toFixed(2)}</Text></View>
             <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />

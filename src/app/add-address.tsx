@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import AddressMap from "@/components/address-map";
 import { ButtonContent } from "@/components/button-content";
 import {
@@ -16,13 +17,11 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View,
-} from "react-native";
+  View} from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,

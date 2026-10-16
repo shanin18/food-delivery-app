@@ -1,9 +1,11 @@
+import { useReducedMotion } from 'react-native-reanimated';
 import { useAuth } from '@/providers/auth-provider';
 import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
+ const reducedMotion = useReducedMotion();
   const { session } = useAuth();
-  return <Stack screenOptions={{ headerShown: false }}>
+  return <Stack screenOptions={{ headerShown: false, animation: reducedMotion ? 'none' : 'slide_from_right', animationDuration: 240 }}>
     <Stack.Protected guard={!session}>
       <Stack.Screen name="login" />
       <Stack.Screen name="signup" />

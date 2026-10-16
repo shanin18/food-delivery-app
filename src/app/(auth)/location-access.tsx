@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { ButtonContent } from "@/components/button-content";
 import { AuthFeedback } from "@/components/auth-feedback";
 import LocationMap from "@/components/location-map";
@@ -10,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const LocationAccessScreen = () => {

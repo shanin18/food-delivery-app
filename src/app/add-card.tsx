@@ -1,10 +1,11 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { PaymentHeader, paymentStyles as shared } from '@/components/payment-ui';
 import { Colors, Fonts } from '@/constants/theme';
 import { validateDemoCard } from '@/lib/payment';
 import { usePayment } from '@/providers/payment-provider';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AddCardScreen() {

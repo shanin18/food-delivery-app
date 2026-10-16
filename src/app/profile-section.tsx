@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import {
   ProfileHeader,
   profileStyles as shared,
@@ -5,7 +6,7 @@ import {
 import { Colors, Fonts } from "@/constants/theme";
 import { usePayment } from "@/providers/payment-provider";
 import { router, useLocalSearchParams } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function ProfileSectionScreen() {
   const { section } = useLocalSearchParams<{ section?: string }>();

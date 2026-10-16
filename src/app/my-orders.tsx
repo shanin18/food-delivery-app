@@ -1,3 +1,5 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
+import { useAppDialog } from '@/providers/dialog-provider';
 import { Colors, Fonts } from '@/constants/theme';
 import { dishes, restaurants } from '@/data/catalog';
 import type { Order } from '@/lib/orders';
@@ -6,10 +8,11 @@ import { usePayment } from '@/providers/payment-provider';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MyOrdersScreen() {
+ const dialog = useAppDialog();
   const { orders, ordersLoading, storageError, cancel, rate } = usePayment();
   const { addItem } = useFood();
   const [tab, setTab] = useState<'ongoing' | 'history'>('ongoing');
@@ -31,7 +34,7 @@ export default function MyOrdersScreen() {
         return <View key={order.id} style={styles.card}>
           <View style={styles.row}><Text style={styles.type}>Food</Text>{order.status !== 'ongoing' && <Text style={[styles.status, { color: order.status === 'completed' ? '#16A36D' : Colors.error }]}>{order.status === 'completed' ? 'Completed' : 'Cancelled'}</Text>}</View>
           <View style={styles.summary}>{image && <Image source={image} style={styles.photo} resizeMode={dish?.image ? 'contain' : 'cover'} />}<View style={{ flex: 1 }}><View style={styles.row}><Text style={styles.restaurant}>{restaurant?.name ?? order.items[0]?.name}</Text><Text style={styles.orderId}>#{order.id.replace('FD-', '').slice(-6)}</Text></View><View style={[styles.row, { marginTop: 8 }]}><Text style={styles.price}>${order.total.toFixed(2)}</Text><Text style={styles.meta}>{order.quantity} Items</Text></View>{tab === 'history' && <Text style={styles.date}>{new Date(order.createdAt).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: 'numeric', minute: '2-digit' })}</Text>}</View></View>
-          <View style={styles.buttons}>{tab === 'ongoing' ? <><Pressable accessibilityRole="button" style={styles.primary} onPress={() => router.push({ pathname: '/order-tracking', params: { orderId: order.id } })}><Text style={styles.primaryText}>Track Order</Text></Pressable><Pressable accessibilityRole="button" style={styles.outline} onPress={() => Alert.alert('Cancel order?', 'This order will move to your history.', [{ text: 'Keep Order', style: 'cancel' }, { text: 'Cancel Order', style: 'destructive', onPress: () => cancel(order.id) }])}><Text style={styles.outlineText}>Cancel</Text></Pressable></> : <>{order.status === 'completed' ? <Pressable accessibilityRole="button" style={styles.outline} onPress={() => { setRatingOrder(order.id); setStars(order.rating ?? 0); }}><Text style={styles.outlineText}>{order.rating ? `Rated ${order.rating}/5` : 'Rate'}</Text></Pressable> : <View style={{ flex: 1 }} />}<Pressable accessibilityRole="button" style={styles.primary} onPress={() => reorder(order)}><Text style={styles.primaryText}>Re-Order</Text></Pressable></>}</View>
+          <View style={styles.buttons}>{tab === 'ongoing' ? <><Pressable accessibilityRole="button" style={styles.primary} onPress={() => router.push({ pathname: '/order-tracking', params: { orderId: order.id } })}><Text style={styles.primaryText}>Track Order</Text></Pressable><Pressable accessibilityRole="button" style={styles.outline} onPress={() => dialog.alert('Cancel order?', 'This order will move to your history.', [{ text: 'Keep Order', style: 'cancel' }, { text: 'Cancel Order', style: 'destructive', onPress: () => cancel(order.id) }])}><Text style={styles.outlineText}>Cancel</Text></Pressable></> : <>{order.status === 'completed' ? <Pressable accessibilityRole="button" style={styles.outline} onPress={() => { setRatingOrder(order.id); setStars(order.rating ?? 0); }}><Text style={styles.outlineText}>{order.rating ? `Rated ${order.rating}/5` : 'Rate'}</Text></Pressable> : <View style={{ flex: 1 }} />}<Pressable accessibilityRole="button" style={styles.primary} onPress={() => reorder(order)}><Text style={styles.primaryText}>Re-Order</Text></Pressable></>}</View>
         </View>;
       })}
       {storageError && <Text accessibilityRole="alert" style={{ color: Colors.error, marginBottom: 16 }}>{storageError}</Text>}

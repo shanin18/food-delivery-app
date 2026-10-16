@@ -1,8 +1,9 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { ProfileHeader, ProfileSummary, profileStyles as shared, useProfile } from '@/components/profile-ui';
 import { Colors, Fonts } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 export default function PersonalInfoScreen() {
   const profile = useProfile();

@@ -1,6 +1,7 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors } from '@/constants/theme';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 
 export function RestaurantRevenueChart({ values, labels }: { values: number[]; labels: string[] }) {

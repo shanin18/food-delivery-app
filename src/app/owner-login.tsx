@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { ButtonContent } from '@/components/button-content';
 import { ProfileHeader, profileStyles as shared } from '@/components/profile-ui';
 import { Colors, Fonts } from '@/constants/theme';
@@ -6,7 +7,7 @@ import { getRestaurantAccount } from '@/lib/restaurant-account';
 import { useAuth } from '@/providers/auth-provider';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 export default function OwnerLoginScreen() {
   const { session } = useAuth();

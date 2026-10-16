@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { useFood } from "@/providers/food-provider";
 import { OfferPopup } from "@/components/offer-popup";
 import { Colors, Fonts } from "@/constants/theme";
@@ -11,12 +12,10 @@ import {
 import { router } from "expo-router";
 import {
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-} from "react-native";
+  View} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const categories = [

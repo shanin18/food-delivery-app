@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from "@/constants/theme";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
@@ -7,12 +8,10 @@ import {
   Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Pressable,
   StyleSheet,
   Text,
   useWindowDimensions,
-  View,
-} from "react-native";
+  View} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const onboardingData = [

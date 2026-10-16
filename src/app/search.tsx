@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { FoodCard } from "@/components/food-card";
 import { Colors, Fonts } from "@/constants/theme";
 import { dishes, restaurants } from "@/data/catalog";
@@ -5,7 +6,7 @@ import { clearRecentSearches, getRecentSearches, matchesSearch as matches, remem
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
-import { Image, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const suggestedKeywords = ["Burger", "Sandwich", "Hot Dog", "Pizza", "Salad", "Desserts"];

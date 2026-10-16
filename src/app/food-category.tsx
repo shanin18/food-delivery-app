@@ -1,10 +1,11 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { FoodCard } from '@/components/food-card';
 import { Colors, Fonts } from '@/constants/theme';
 import { dishes, foodCategories, restaurants } from '@/data/catalog';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FoodCategoryScreen() {

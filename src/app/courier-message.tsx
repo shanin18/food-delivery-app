@@ -1,3 +1,4 @@
+import { InteractivePressable as Pressable } from '@/components/interactive-pressable';
 import { Colors, Fonts } from "@/constants/theme";
 import { sampleCourier } from "@/data/courier";
 import { useCourierChat } from "@/hooks/use-courier-chat";
@@ -10,13 +11,11 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View,
-} from "react-native";
+  View} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const emojis = [
